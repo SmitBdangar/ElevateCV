@@ -243,7 +243,6 @@ def validate_config():
     if thresholds != list(SCORE_THRESHOLDS.values()):
         print("⚠️  WARNING: Score thresholds should be in descending order")
     
-    # Check for duplicate skills
     all_skills = []
     for category, skills in SKILL_CATEGORIES.items():
         all_skills.extend(skills)
