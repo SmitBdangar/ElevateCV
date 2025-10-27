@@ -1,20 +1,18 @@
 import streamlit as st
-import openai
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Optional
 import re
 import json
 from dataclasses import dataclass, asdict
 import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
 from datetime import datetime
 import hashlib
 import pandas as pd
-from io import BytesIO
+
 
 # Configure page
 st.set_page_config(
-    page_title="AI Resume Analyzer Pro",
-    page_icon="🎯",
+    page_title="Saiqen",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -83,6 +81,7 @@ if 'analysis_history' not in st.session_state:
     st.session_state.analysis_history = []
 if 'current_job' not in st.session_state:
     st.session_state.current_job = None
+    
 if 'dark_mode' not in st.session_state:
     st.session_state.dark_mode = False
 
@@ -568,7 +567,7 @@ class EnhancedScoringEngine:
         """Generate detailed feedback"""
         feedback_parts = []
         
-        feedback_parts.append("### 📊 Analysis Summary\n")
+        feedback_parts.append("###Analysis Summary\n")
         
         # Skills feedback
         if skill_analysis['matched']:
@@ -590,7 +589,7 @@ class EnhancedScoringEngine:
                 feedback_parts.append(f"- {issue}")
         
         # Recommendations
-        feedback_parts.append("\n### 💡 Key Recommendations")
+        feedback_parts.append("\n### Key Recommendations")
         feedback_parts.append("1. Tailor your resume to highlight matching skills prominently")
         feedback_parts.append("2. Quantify achievements with specific metrics and results")
         feedback_parts.append("3. Use keywords from the job description naturally throughout")
@@ -622,26 +621,26 @@ def display_candidate_card(result: AnalysisResult, idx: int):
             st.caption(f"{len(result.matched_skills)} matched skills")
         
         with col3:
-            st.caption(f"📅 {result.resume_data.years_of_experience} yrs exp")
-            st.caption(f"🎓 {len(result.resume_data.education)} degrees")
+            st.caption(f"{result.resume_data.years_of_experience} yrs exp")
+            st.caption(f"{len(result.resume_data.education)} degrees")
         
         with col4:
             if st.button("View", key=f"view_{idx}"):
                 st.session_state[f'show_detail_{idx}'] = not st.session_state.get(f'show_detail_{idx}', False)
         
         if st.session_state.get(f'show_detail_{idx}', False):
-            with st.expander("📋 Details", expanded=True):
+            with st.expander("Details", expanded=True):
                 col_a, col_b = st.columns(2)
                 
                 with col_a:
                     st.markdown("**Strengths:**")
                     for strength in result.strengths:
-                        st.markdown(f"✅ {strength}")
+                        st.markdown(f"{strength}")
                 
                 with col_b:
                     st.markdown("**Weaknesses:**")
                     for weakness in result.weaknesses:
-                        st.markdown(f"⚠️ {weakness}")
+                        st.markdown(f"{weakness}")
                 
                 st.markdown("**Notes:**")
                 notes = st.text_area(
@@ -683,14 +682,14 @@ def main():
     # Header
     st.markdown("""
     <div class="main-header">
-        <h1>🎯 AI Resume Analyzer Pro</h1>
-        <p>Advanced AI-powered resume analysis with batch processing, ATS checking, and detailed insights</p>
+        <h1>🎯 Saiqen Analyzer</h1>
+        <p>AI-powered resume analysis with batch processing, ATS checking, and detailed insights</p>
     </div>
     """, unsafe_allow_html=True)
     
     # Sidebar
     with st.sidebar:
-        st.header("⚙️ Settings")
+        st.header("Settings")
         
         api_key = st.text_input(
             "OpenAI API Key (Optional)",
@@ -701,7 +700,7 @@ def main():
         st.markdown("---")
         
         # Mode selection
-        st.subheader("📊 Analysis Mode")
+        st.subheader("Analysis Mode")
         mode = st.radio(
             "Select mode:",
             ["Single Resume", "Batch Processing", "Analytics Dashboard"],
@@ -711,7 +710,7 @@ def main():
         st.markdown("---")
         
         # Quick stats
-        st.subheader("📈 Session Stats")
+        st.subheader("Session Stats")
         st.metric("Candidates Analyzed", len(st.session_state.candidates))
         st.metric("Current Job", "Active" if st.session_state.current_job else "None")
         
@@ -722,27 +721,27 @@ def main():
         st.markdown("---")
         
         # Quick actions
-        st.subheader("🚀 Quick Actions")
-        if st.button("📊 Load Sample Data", use_container_width=True):
+        st.subheader("Quick Actions")
+        if st.button("Load Sample Data", use_container_width=True):
             st.session_state['load_sample'] = True
             st.rerun()
         
-        if st.button("🗑️ Clear All Data", use_container_width=True):
+        if st.button("Clear All Data", use_container_width=True):
             st.session_state.candidates = []
             st.session_state.current_job = None
             st.success("Data cleared!")
         
-        st.markdown("---")
-        st.markdown("### 💡 Features")
-        st.markdown("""
-        - ✅ Batch resume processing
-        - ✅ ATS compatibility check
-        - ✅ Skill gap analysis
-        - ✅ Experience matching
-        - ✅ Candidate ranking
-        - ✅ Export to CSV
-        - ✅ Comparison view
-        """)
+        # st.markdown("---")
+        # st.markdown("###Features")
+        # st.markdown("""
+        # - Batch resume processing
+        # - ATS compatibility check
+        # - Skill gap analysis
+        # - ✅ Experience matching
+        # - ✅ Candidate ranking
+        # - ✅ Export to CSV
+        # - ✅ Comparison view
+        # """)
     
     # Load sample data if requested
     if st.session_state.get('load_sample'):
@@ -760,7 +759,7 @@ def main():
 def display_single_resume_mode(api_key: Optional[str]):
     """Single resume analysis mode"""
     
-    st.subheader("📄 Single Resume Analysis")
+    st.subheader("Single Resume Analysis")
     
     # Job description first
     st.markdown("### Step 1: Enter Job Description")
@@ -772,14 +771,14 @@ def display_single_resume_mode(api_key: Optional[str]):
     
     if job_text:
         st.session_state.current_job = EnhancedJobParser.parse(job_text)
-        st.success(f"✅ Job loaded: {st.session_state.current_job.title}")
+        st.success(f"Job loaded: {st.session_state.current_job.title}")
     
     st.markdown("---")
     
     # Resume input
     st.markdown("### Step 2: Enter Resume")
     
-    tab1, tab2 = st.tabs(["📝 Paste Text", "📁 Upload File"])
+    tab1, tab2 = st.tabs(["Paste Text", "Upload File"])
     
     resume_text = ""
     
@@ -804,8 +803,8 @@ def display_single_resume_mode(api_key: Optional[str]):
             try:
                 if uploaded_file.name.endswith('.txt'):
                     resume_text = uploaded_file.read().decode('utf-8')
-                    st.success(f"✅ Loaded: {uploaded_file.name}")
-                    with st.expander("📄 Preview"):
+                    st.success(f"Loaded: {uploaded_file.name}")
+                    with st.expander("Preview"):
                         st.text_area("File content", resume_text[:500] + "...", height=150, disabled=True)
                 else:
                     st.info("PDF/DOCX parsing requires additional libraries. Please install PyPDF2 or python-docx, or use the Paste Text tab.")
@@ -813,7 +812,7 @@ def display_single_resume_mode(api_key: Optional[str]):
                 st.error(f"Error reading file: {e}")
     
     # Analyze button
-    if st.button("🚀 Analyze Resume", type="primary", use_container_width=True):
+    if st.button("Analyze Resume", type="primary", use_container_width=True):
         if not resume_text:
             st.error("Please provide a resume")
             return
@@ -842,7 +841,7 @@ def display_single_resume_mode(api_key: Optional[str]):
 def display_batch_processing_mode(api_key: Optional[str]):
     """Batch resume processing mode"""
     
-    st.subheader("📦 Batch Resume Processing")
+    st.subheader("Batch Resume Processing")
     
     # Job description
     st.markdown("### Step 1: Set Job Description")
@@ -856,13 +855,13 @@ def display_batch_processing_mode(api_key: Optional[str]):
         )
     
     with col2:
-        if st.button("💾 Save Job", use_container_width=True):
+        if st.button("Save Job", use_container_width=True):
             if job_text:
                 st.session_state.current_job = EnhancedJobParser.parse(job_text)
                 st.success("Job saved!")
     
     if st.session_state.current_job:
-        st.info(f"📋 Current Job: **{st.session_state.current_job.title}**")
+        st.info(f"Current Job: **{st.session_state.current_job.title}**")
     
     st.markdown("---")
     
@@ -885,7 +884,7 @@ def display_batch_processing_mode(api_key: Optional[str]):
                 resumes_to_process.append(resume_text)
     
     # Process batch
-    if st.button("🚀 Process All Resumes", type="primary", use_container_width=True):
+    if st.button("Process All Resumes", type="primary", use_container_width=True):
         if not st.session_state.current_job:
             st.error("Please set a job description first")
             return
@@ -913,7 +912,7 @@ def display_batch_processing_mode(api_key: Optional[str]):
             
             progress_bar.progress((idx + 1) / len(resumes_to_process))
         
-        status_text.text("✅ All resumes processed!")
+        status_text.text("All resumes processed!")
         st.success(f"Processed {len(resumes_to_process)} resumes")
         
         # Clear inputs
@@ -924,7 +923,7 @@ def display_batch_processing_mode(api_key: Optional[str]):
     
     # Display results
     if st.session_state.candidates:
-        st.markdown("### 📊 Candidate Rankings")
+        st.markdown("###Candidate Rankings")
         
         # Sort options
         col1, col2, col3 = st.columns([2, 2, 1])
@@ -939,7 +938,7 @@ def display_batch_processing_mode(api_key: Optional[str]):
             filter_score = st.slider("Minimum Score", 0, 100, 0)
         
         with col3:
-            if st.button("📥 Export CSV", use_container_width=True):
+            if st.button("Export CSV", use_container_width=True):
                 csv_data = export_results_to_csv(st.session_state.candidates)
                 st.download_button(
                     "Download",
@@ -974,7 +973,7 @@ def display_batch_processing_mode(api_key: Optional[str]):
 def display_analytics_dashboard():
     """Analytics dashboard with insights"""
     
-    st.subheader("📈 Analytics Dashboard")
+    st.subheader("Analytics Dashboard")
     
     if not st.session_state.candidates:
         st.info("No data available. Analyze some resumes first!")
@@ -1003,7 +1002,7 @@ def display_analytics_dashboard():
     st.markdown("---")
     
     # Score distribution
-    st.markdown("### 📊 Score Distribution")
+    st.markdown("### Score Distribution")
     
     col1, col2 = st.columns(2)
     
@@ -1025,7 +1024,7 @@ def display_analytics_dashboard():
     
     with col2:
         # Top candidates
-        st.markdown("**🏆 Top 5 Candidates**")
+        st.markdown("**Top 5 Candidates**")
         top_5 = sorted(candidates, key=lambda x: x.overall_score, reverse=True)[:5]
         
         for idx, candidate in enumerate(top_5, 1):
@@ -1034,7 +1033,7 @@ def display_analytics_dashboard():
     st.markdown("---")
     
     # Skill analysis
-    st.markdown("### 🎯 Skill Analysis")
+    st.markdown("### Skill Analysis")
     
     col1, col2 = st.columns(2)
     
@@ -1073,7 +1072,7 @@ def display_analytics_dashboard():
     st.markdown("---")
     
     # Detailed comparison
-    st.markdown("### 🔍 Detailed Comparison")
+    st.markdown("### Detailed Comparison")
     
     if len(candidates) >= 2:
         # Select candidates to compare
@@ -1101,7 +1100,7 @@ def display_analytics_dashboard():
                 
                 st.markdown("**Strengths:**")
                 for s in c1.strengths:
-                    st.markdown(f"✅ {s}")
+                    st.markdown(f"{s}")
             
             with col_b:
                 st.markdown(f"### {c2.candidate_name}")
@@ -1111,7 +1110,7 @@ def display_analytics_dashboard():
                 
                 st.markdown("**Strengths:**")
                 for s in c2.strengths:
-                    st.markdown(f"✅ {s}")
+                    st.markdown(f"{s}")
 
 def display_analysis_results(result: AnalysisResult):
     """Display detailed analysis results"""
@@ -1136,7 +1135,7 @@ def display_analysis_results(result: AnalysisResult):
     """, unsafe_allow_html=True)
     
     # Score breakdown
-    st.subheader("📊 Score Breakdown")
+    st.subheader("Score Breakdown")
     
     col1, col2, col3, col4, col5 = st.columns(5)
     
@@ -1157,7 +1156,7 @@ def display_analysis_results(result: AnalysisResult):
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("✅ Strengths")
+        st.subheader("Strengths")
         for strength in result.strengths:
             st.success(strength)
         
@@ -1165,7 +1164,7 @@ def display_analysis_results(result: AnalysisResult):
             st.info("No major strengths identified")
     
     with col2:
-        st.subheader("⚠️ Areas for Improvement")
+        st.subheader("Areas for Improvement")
         for weakness in result.weaknesses:
             st.warning(weakness)
         
@@ -1175,12 +1174,12 @@ def display_analysis_results(result: AnalysisResult):
     st.markdown("---")
     
     # Skill analysis
-    st.subheader("🎯 Skill Analysis")
+    st.subheader("Skill Analysis")
     
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("**✅ Matched Skills**")
+        st.markdown("**Matched Skills**")
         if result.matched_skills:
             for skill in result.matched_skills:
                 st.markdown(f'<span class="skill-badge matched-skill">{skill}</span>', unsafe_allow_html=True)
@@ -1188,7 +1187,7 @@ def display_analysis_results(result: AnalysisResult):
             st.info("No matching skills found")
     
     with col2:
-        st.markdown("**❌ Missing Skills**")
+        st.markdown("**Missing Skills**")
         if result.missing_skills:
             for skill in result.missing_skills[:10]:
                 st.markdown(f'<span class="skill-badge missing-skill">{skill}</span>', unsafe_allow_html=True)
@@ -1198,13 +1197,13 @@ def display_analysis_results(result: AnalysisResult):
     st.markdown("---")
     
     # Detailed feedback
-    st.subheader("💬 Detailed Feedback")
+    st.subheader("Detailed Feedback")
     st.markdown(result.feedback)
     
     st.markdown("---")
     
     # Candidate details
-    with st.expander("👤 Candidate Details"):
+    with st.expander("Candidate Details"):
         col1, col2 = st.columns(2)
         
         with col1:
@@ -1221,7 +1220,7 @@ def display_analysis_results(result: AnalysisResult):
     
     # Export options
     st.markdown("---")
-    st.subheader("📥 Export Report")
+    st.subheader("Export Report")
     
     col1, col2 = st.columns(2)
     
@@ -1257,7 +1256,7 @@ Report generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 """
         
         st.download_button(
-            "📄 Download as Markdown",
+            "Download as Markdown",
             report,
             file_name=f"analysis_{result.candidate_id}.md",
             mime="text/markdown",
@@ -1268,7 +1267,7 @@ Report generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
         # Export as JSON
         json_data = json.dumps(asdict(result), indent=2, default=str)
         st.download_button(
-            "📊 Download as JSON",
+            "Download as JSON",
             json_data,
             file_name=f"analysis_{result.candidate_id}.json",
             mime="application/json",
