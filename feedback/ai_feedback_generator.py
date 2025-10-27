@@ -1,8 +1,3 @@
-"""
-AI-Powered Feedback Generator and Resume Rewriter
-Uses OpenAI GPT for intelligent feedback and content improvement
-"""
-
 from typing import Dict, List, Optional
 import openai
 from dataclasses import dataclass
