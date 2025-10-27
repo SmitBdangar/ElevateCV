@@ -4,8 +4,7 @@ from feedback.ai_feedback_generator import AIFeedbackGenerator
 
 def test_fallback_feedback():
     """Test rule-based feedback generation"""
-    generator = AIFeedbackGenerator(api_key=None)  # No API key = fallback mode
-    
+    generator = AIFeedbackGenerator(api_key=None)  
     resume_data = {
         'skills': ['python', 'sql'],
         'experience': [{'title': 'Developer'}],
