@@ -68,7 +68,6 @@ class JobParser:
     
     @classmethod
     def parse(cls, job_text: str, job_title: str = "") -> JobData:
-        """Parse job description into structured data"""
         return JobData(
             required_skills=cls.extract_required_skills(job_text),
             preferred_skills=cls.extract_preferred_skills(job_text),
