@@ -1,8 +1,3 @@
-"""
-Enhanced Scoring Engine with Multiple Matching Algorithms
-Includes: Keyword matching, semantic similarity, skill taxonomy, experience weighting
-"""
-
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
 import numpy as np
