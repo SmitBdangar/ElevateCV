@@ -1,0 +1,5 @@
+<UserControl x:Class="Luminos.Views.CanvasView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Background="#222" />
+</UserControl>

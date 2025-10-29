@@ -1,9 +1,31 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Luminos.MainWindow"
-        Title="Luminos">
-    Welcome to Avalonia!
+        xmlns:views="clr-namespace:Luminos.Views"
+        Width="1000" Height="700"
+        Title="LUMINOS">
+
+    <DockPanel>
+
+        <!-- LEFT TOOLBAR -->
+        <StackPanel DockPanel.Dock="Left" Width="60" Background="#2b2b2b" Spacing="8" Margin="10"
+>
+            <Button Content="✏" FontSize="24"/>
+            <Button Content="🧽" FontSize="24"/>
+            <Button Content="✂" FontSize="24"/>
+        </StackPanel>
+
+        <!-- TOP MENU BAR -->
+        <StackPanel DockPanel.Dock="Top" Background="#202020" Height="40" Orientation="Horizontal" Margin="10"
+>
+            <TextBlock Text="File" Margin="10" Foreground="White"/>
+            <TextBlock Text="Edit" Margin="10" Foreground="White"/>
+            <TextBlock Text="View" Margin="10" Foreground="White"/>
+        </StackPanel>
+
+        <!-- MAIN CANVAS AREA -->
+       <views:CanvasView Margin="10"/>
+
+
+    </DockPanel>
 </Window>
