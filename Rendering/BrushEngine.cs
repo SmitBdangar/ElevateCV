@@ -3,32 +3,40 @@ using Luminos.Core;
 
 namespace Luminos.Rendering
 {
-    public static class BrushEngine
+    public class BrushEngine
     {
-        private static int _brushSize = 10;
+        public static BrushEngine Instance { get; } = new BrushEngine();
 
-        public static Color BrushColor { get; set; } = Colors.LimeGreen;
+        public int BrushSize { get; set; } = 10;
+        public Color BrushColor { get; set; } = Colors.Black;
 
-        public static void ApplyBrush(Document document, int x, int y)
+        private BrushEngine() { }
+
+        public void ApplyBrush(Document document, int x, int y)
         {
-            for (int dy = -_brushSize; dy <= _brushSize; dy++)
-            {
-                for (int dx = -_brushSize; dx <= _brushSize; dx++)
-                {
-                    int px = x + dx;
-                    int py = y + dy;
+            int r = BrushSize;
+            int r2 = r * r;
 
-                    if (px >= 0 && px < document.Width && py >= 0 && py < document.Height)
+            for (int dy = -r; dy <= r; dy++)
+            {
+                for (int dx = -r; dx <= r; dx++)
+                {
+                    if (dx * dx + dy * dy <= r2)
                     {
-                        document.Pixels[py * document.Width + px] = ColorToUint(BrushColor);
+                        int px = x + dx;
+                        int py = y + dy;
+
+                        if (px >= 0 && px < document.Width && py >= 0 && py < document.Height)
+                            document.Pixels[py * document.Width + px] = ColorToUint(BrushColor);
                     }
                 }
             }
         }
 
-        private static uint ColorToUint(Color color)
+        private static uint ColorToUint(Color c)
         {
-            return ((uint)color.A << 24) | ((uint)color.R << 16) | ((uint)color.G << 8) | color.B;
+            // BGRA order in memory (lowest byte = B)
+            return ((uint)c.B) | ((uint)c.G << 8) | ((uint)c.R << 16) | ((uint)c.A << 24);
         }
     }
 }

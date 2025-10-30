@@ -17,6 +17,24 @@
             <Rectangle Width="40" Height="40" Fill="Black"  Name="BlackColor"/>
         </StackPanel>
 
+        <StackPanel Background="#2B2B2B" Spacing="6" Margin="6" Width="60">
+
+            <!-- COLOR BUTTONS... -->
+
+            <!-- Brush Size Label -->
+            <TextBlock Text="Size" Foreground="White" FontSize="12" HorizontalAlignment="Center"/>
+
+            <!-- Brush Size Slider -->
+            <Slider Name="BrushSizeSlider"
+                    Minimum="1" Maximum="60"
+                    Value="10"
+                    Orientation="Vertical"
+                    Height="200"
+                    Margin="0,5"/>
+
+        </StackPanel>
+
+
         <!-- DRAWING CANVAS -->
         <views:CanvasView Grid.Column="1" Name="Canvas"/>
     </Grid>
