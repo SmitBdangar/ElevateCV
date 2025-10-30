@@ -12,15 +12,12 @@ namespace Luminos.Views
 {
     public partial class CanvasView : UserControl
     {
-
-        private bool _showCursor = false;
-        private int _cursorX, _cursorY;
-
         private readonly Document _document;
-        private BrushEngine BrushEngine => BrushEngine.Instance;
-
         private WriteableBitmap _bitmap;
         private (int x, int y)? _lastPoint = null;
+
+        private int _cursorX, _cursorY;
+        private bool _showCursor = false;
 
         public CanvasView()
         {
@@ -29,48 +26,45 @@ namespace Luminos.Views
             _document = new Document(800, 600);
 
             _bitmap = new WriteableBitmap(
-    new PixelSize(_document.Width, _document.Height),
-    new Vector(96, 96),
-    Avalonia.Platform.PixelFormat.Bgra8888,
-    Avalonia.Platform.AlphaFormat.Premul // or Premul if you expect premultiplied alpha
-);
+                new PixelSize(_document.Width, _document.Height),
+                new Vector(96, 96),
+                Avalonia.Platform.PixelFormat.Bgra8888,
+                Avalonia.Platform.AlphaFormat.Premul);
 
-
-            PointerPressed += OnPointerMoved;
-            PointerMoved += OnPointerMoved;
+            PointerPressed += OnPointerMove;
+            PointerMoved += OnPointerMove;
             PointerReleased += (_, __) => _lastPoint = null;
         }
 
-        private void OnPointerMoved(object? sender, PointerEventArgs e)
+        private void OnPointerMove(object? sender, PointerEventArgs e)
         {
             var point = e.GetPosition(this);
             _cursorX = (int)point.X;
             _cursorY = (int)point.Y;
             _showCursor = true;
 
+            // ✅ Use ActualWidth instead of Bounds.Width!
+            double scaleX = _document.Width / Math.Max(1, this.Bounds.Width);
+            double scaleY = _document.Height / Math.Max(1, this.Bounds.Height);
+
+
+            int x = (int)(point.X * scaleX);
+            int y = (int)(point.Y * scaleY);
+
             var props = e.GetCurrentPoint(this).Properties;
 
-            // 🎯 Eyedropper (Right Click)
-            if (props.IsRightButtonPressed)
-            {
-                PickColor(_cursorX, _cursorY);
-                InvalidateVisual();
-                return;
-            }
-
-            // ✏️ Normal Brush (Left Click)
+            // ✏️ Drawing
             if (props.IsLeftButtonPressed)
             {
-                int x = _cursorX;
-                int y = _cursorY;
-
                 if (_lastPoint is (int lx, int ly))
-                    BrushEngine.Instance.ApplyBrush(_document, x, y);
+                    DrawSmoothLine(lx, ly, x, y);
                 else
                     BrushEngine.Instance.ApplyBrush(_document, x, y);
 
                 _lastPoint = (x, y);
+
                 UpdateBitmap();
+                InvalidateVisual();
             }
             else
             {
@@ -78,38 +72,33 @@ namespace Luminos.Views
             }
 
             InvalidateVisual();
-
         }
 
         private unsafe void UpdateBitmap()
         {
-            using (var buffer = _bitmap.Lock())
-            {
+            using (var buf = _bitmap.Lock())
                 fixed (uint* src = _document.Pixels)
-                {
-                    Buffer.MemoryCopy(src, (void*)buffer.Address,
+                    Buffer.MemoryCopy(src, (void*)buf.Address,
                         _document.Pixels.Length * 4,
                         _document.Pixels.Length * 4);
-                }
-            }
         }
 
-        public override void Render(DrawingContext context)
+        public override void Render(DrawingContext ctx)
         {
-            base.Render(context);
+            base.Render(ctx);
 
-            // Draw the image
-            context.DrawImage(_bitmap, new Rect(_bitmap.Size), new Rect(Bounds.Size));
+            // ✅ Draw Canvas
+            ctx.DrawImage(_bitmap, new Rect(_bitmap.Size), new Rect(Bounds.Size));
 
-            // Draw the brush preview
+            // ✅ Brush preview circle
             if (_showCursor)
             {
                 int size = BrushEngine.Instance.BrushSize;
-                var color = BrushEngine.Instance.BrushColor;
+                var color = BrushEngine.Instance.IsEraser ? Colors.White : BrushEngine.Instance.BrushColor;
 
                 var previewPen = new Pen(new SolidColorBrush(color), 1);
 
-                context.DrawEllipse(
+                ctx.DrawEllipse(
                     null,
                     previewPen,
                     new Avalonia.Point(_cursorX, _cursorY),
@@ -119,11 +108,9 @@ namespace Luminos.Views
             }
         }
 
-
         private void DrawSmoothLine(int x0, int y0, int x1, int y1)
         {
-            int dx = Math.Abs(x1 - x0);
-            int dy = Math.Abs(y1 - y0);
+            int dx = Math.Abs(x1 - x0), dy = Math.Abs(y1 - y0);
             int sx = x0 < x1 ? 1 : -1;
             int sy = y0 < y1 ? 1 : -1;
             int err = dx - dy;
@@ -131,32 +118,11 @@ namespace Luminos.Views
             while (true)
             {
                 BrushEngine.Instance.ApplyBrush(_document, x0, y0);
-
-                if (x0 == x1 && y0 == y1)
-                    break;
-
+                if (x0 == x1 && y0 == y1) break;
                 int e2 = err * 2;
                 if (e2 > -dy) { err -= dy; x0 += sx; }
                 if (e2 < dx) { err += dx; y0 += sy; }
             }
         }
-
-       private void PickColor(int x, int y)
-{
-    if (x < 0 || x >= _document.Width || y < 0 || y >= _document.Height)
-        return;
-
-    uint px = _document.Pixels[y * _document.Width + x];
-
-    byte b = (byte)(px & 0xFF);
-    byte g = (byte)((px >> 8) & 0xFF);
-    byte r = (byte)((px >> 16) & 0xFF);
-    byte a = (byte)((px >> 24) & 0xFF);
-
-    BrushEngine.Instance.BrushColor = Avalonia.Media.Color.FromArgb(a, r, g, b);
-}
-
-
-
     }
 }

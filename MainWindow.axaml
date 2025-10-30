@@ -2,41 +2,35 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="clr-namespace:Luminos.Views"
         x:Class="Luminos.MainWindow"
-        Width="900" Height="600"
+        Width="1100" Height="700"
         Title="Luminos">
 
-    <Grid ColumnDefinitions="60, *">
-        
-        <!-- LEFT TOOLBAR -->
-        <StackPanel Background="#2B2B2B" Orientation="Vertical" Spacing="6" Margin="6">
-            <Rectangle Width="40" Height="40" Fill="Red"    Name="RedColor"/>
-            <Rectangle Width="40" Height="40" Fill="Green"  Name="GreenColor"/>
-            <Rectangle Width="40" Height="40" Fill="Blue"   Name="BlueColor"/>
-            <Rectangle Width="40" Height="40" Fill="Yellow" Name="YellowColor"/>
-            <Rectangle Width="40" Height="40" Fill="White"  Name="WhiteColor"/>
-            <Rectangle Width="40" Height="40" Fill="Black"  Name="BlackColor"/>
-        </StackPanel>
+    <DockPanel>
 
-        <StackPanel Background="#2B2B2B" Spacing="6" Margin="6" Width="60">
+        <!-- Left Toolbar -->
+        <StackPanel DockPanel.Dock="Left" Width="90" Spacing="8" Margin="8">
 
-            <!-- COLOR BUTTONS... -->
+            <TextBlock Text="Colors" FontWeight="Bold" Margin="0 0 0 6"/>
 
-            <!-- Brush Size Label -->
-            <TextBlock Text="Size" Foreground="White" FontSize="12" HorizontalAlignment="Center"/>
+            <Border x:Name="RedColor"    Background="Red"    Width="40" Height="40"/>
+            <Border x:Name="GreenColor"  Background="Green"  Width="40" Height="40"/>
+            <Border x:Name="BlueColor"   Background="Blue"   Width="40" Height="40"/>
+            <Border x:Name="YellowColor" Background="Yellow" Width="40" Height="40"/>
+            <Border x:Name="WhiteColor"  Background="White"  Width="40" Height="40" BorderBrush="Black" BorderThickness="1"/>
+            <Border x:Name="BlackColor"  Background="Black"  Width="40" Height="40"/>
+            <Button x:Name="EraserButton" Content="Eraser" Width="80" Margin="4"/>
 
-            <!-- Brush Size Slider -->
-            <Slider Name="BrushSizeSlider"
-                    Minimum="1" Maximum="60"
-                    Value="10"
-                    Orientation="Vertical"
-                    Height="200"
-                    Margin="0,5"/>
+
+            <TextBlock Text="Brush Size" Margin="0 16 0 6"/>
+            <Slider x:Name="BrushSizeSlider" Minimum="1" Maximum="60" Value="12"/>
+            <TextBlock Text="Opacity" Margin="0 16 0 6"/>
+            <Slider x:Name="BrushOpacitySlider" Minimum="0.05" Maximum="1" Value="0.4"/>
+
 
         </StackPanel>
 
+        <!-- The Drawing Area -->
+        <views:CanvasView/>
 
-        <!-- DRAWING CANVAS -->
-        <views:CanvasView Grid.Column="1" Name="Canvas"/>
-    </Grid>
-
+    </DockPanel>
 </Window>
