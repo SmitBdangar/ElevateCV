@@ -1,42 +1,34 @@
-using SkiaSharp;
+using Avalonia.Media;
 using Luminos.Core;
 
-namespace Luminos.Rendering;
-
-public static class BrushEngine
+namespace Luminos.Rendering
 {
-    private static SKPoint? _lastPoint = null;
-
-    public static void DrawStroke(Document document, float x, float y, float size, SKColor color)
+    public static class BrushEngine
     {
-        var layer = document.Layers[0];
-        using var canvas = new SKCanvas(layer.Bitmap);
+        private static int _brushSize = 10;
 
-        using var paint = new SKPaint
-        {
-            Color = color,
-            IsAntialias = true,
-            StrokeWidth = size,
-            StrokeCap = SKStrokeCap.Round,
-            StrokeJoin = SKStrokeJoin.Round
-        };
+        public static Color BrushColor { get; set; } = Colors.LimeGreen;
 
-        var current = new SKPoint(x, y);
+        public static void ApplyBrush(Document document, int x, int y)
+        {
+            for (int dy = -_brushSize; dy <= _brushSize; dy++)
+            {
+                for (int dx = -_brushSize; dx <= _brushSize; dx++)
+                {
+                    int px = x + dx;
+                    int py = y + dy;
 
-        if (_lastPoint == null)
-        {
-            canvas.DrawPoint(current, paint);
-        }
-        else
-        {
-            canvas.DrawLine(_lastPoint.Value, current, paint);
+                    if (px >= 0 && px < document.Width && py >= 0 && py < document.Height)
+                    {
+                        document.Pixels[py * document.Width + px] = ColorToUint(BrushColor);
+                    }
+                }
+            }
         }
 
-        _lastPoint = current;
-    }
-
-    public static void EndStroke()
-    {
-        _lastPoint = null;
+        private static uint ColorToUint(Color color)
+        {
+            return ((uint)color.A << 24) | ((uint)color.R << 16) | ((uint)color.G << 8) | color.B;
+        }
     }
 }

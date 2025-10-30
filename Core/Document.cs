@@ -1,19 +1,25 @@
-namespace Luminos.Core;
-using System.Collections.Generic;
-using System;
+using Avalonia.Media;
 
-public class Document
+namespace Luminos.Core
 {
-    public int Width { get; }
-    public int Height { get; }
-    public List<Layer> Layers { get; } = new();
-
-    public Document(int width, int height)
+    public class Document
     {
-        Width = width;
-        Height = height;
+        public int Width { get; }
+        public int Height { get; }
 
-        // Start with one blank layer
-        Layers.Add(Layer.CreateBlank(width, height));
+        // Pixel buffer (ARGB format stored as uint per pixel)
+        public uint[] Pixels { get; }
+
+        public Document(int width, int height)
+        {
+            Width = width;
+            Height = height;
+
+            Pixels = new uint[width * height];
+
+            // Fill with white background
+            for (int i = 0; i < Pixels.Length; i++)
+                Pixels[i] = 0xFFFFFFFF; // White
+        }
     }
 }
