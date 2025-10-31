@@ -1,5 +1,5 @@
 using System;
-using Luminos.Core;
+using Luminos.Rendering;
 using System;
 
 namespace Luminos.Rendering
@@ -14,6 +14,12 @@ namespace Luminos.Rendering
         // FUTURE: Implement static method: public static uint Screen(uint src, uint dst)
         
         // For Phase 1, the Core logic only uses Normal (src-over).
+        // Placeholder Layer class for compilation
+        public class Layer
+        {
+            // Add properties as needed for future implementation
+        }
+
         public static uint CompositeLayers(Layer src, Layer dst)
         {
             // Phase 2 implementation will iterate over pixels and apply Layer.Mode

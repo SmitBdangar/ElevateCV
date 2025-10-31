@@ -97,3 +97,9 @@ C:\Users\Admin\github\Luminos\tests\Luminos.Tests\obj\Debug\net9.0\refint\Lumino
 C:\Users\Admin\github\Luminos\tests\Luminos.Tests\obj\Debug\net9.0\Luminos.Tests.pdb
 C:\Users\Admin\github\Luminos\tests\Luminos.Tests\obj\Debug\net9.0\Luminos.Tests.genruntimeconfig.cache
 C:\Users\Admin\github\Luminos\tests\Luminos.Tests\obj\Debug\net9.0\ref\Luminos.Tests.dll
+C:\Users\Admin\github\Luminos\tests\Luminos.Tests\bin\Debug\net9.0\.msCoverageSourceRootsMapping_Luminos.Tests
+C:\Users\Admin\github\Luminos\tests\Luminos.Tests\bin\Debug\net9.0\CoverletSourceRootsMapping_Luminos.Tests
+C:\Users\Admin\github\Luminos\tests\Luminos.Tests\bin\Debug\net9.0\Luminos.Core.dll
+C:\Users\Admin\github\Luminos\tests\Luminos.Tests\bin\Debug\net9.0\Luminos.Rendering.dll
+C:\Users\Admin\github\Luminos\tests\Luminos.Tests\bin\Debug\net9.0\Luminos.Core.pdb
+C:\Users\Admin\github\Luminos\tests\Luminos.Tests\bin\Debug\net9.0\Luminos.Rendering.pdb

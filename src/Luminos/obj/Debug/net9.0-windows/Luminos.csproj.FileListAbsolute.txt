@@ -19,3 +19,9 @@ C:\Users\Admin\github\Luminos\src\Luminos\obj\Debug\net9.0-windows\refint\Lumino
 C:\Users\Admin\github\Luminos\src\Luminos\obj\Debug\net9.0-windows\Luminos.pdb
 C:\Users\Admin\github\Luminos\src\Luminos\obj\Debug\net9.0-windows\Luminos.genruntimeconfig.cache
 C:\Users\Admin\github\Luminos\src\Luminos\obj\Debug\net9.0-windows\ref\Luminos.dll
+C:\Users\Admin\github\Luminos\src\Luminos\bin\Debug\net9.0-windows\Luminos.Core.dll
+C:\Users\Admin\github\Luminos\src\Luminos\bin\Debug\net9.0-windows\Luminos.Rendering.dll
+C:\Users\Admin\github\Luminos\src\Luminos\bin\Debug\net9.0-windows\Luminos.Core.pdb
+C:\Users\Admin\github\Luminos\src\Luminos\bin\Debug\net9.0-windows\Luminos.Rendering.pdb
+C:\Users\Admin\github\Luminos\src\Luminos\obj\Debug\net9.0-windows\Luminos.csproj.AssemblyReference.cache
+C:\Users\Admin\github\Luminos\src\Luminos\obj\Debug\net9.0-windows\Luminos.csproj.Up2Date

@@ -1,6 +1,6 @@
 using System;
 
-namespace Luminos.Core
+namespace Luminos.Core.Core
 {
     public class StrokeCommand : ICommand
     {

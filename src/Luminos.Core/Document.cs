@@ -1,13 +1,9 @@
 using System;
-using System;
 
 
 namespace Luminos.Core
 {
-    /// <summary>
-    /// Represents the main document (canvas) model for Luminos.
-    /// Stores the dimensions and the raw pixel buffer (uint[] ARGB).
-    /// </summary>
+
     public class Document
     {
         public int Width { get; }

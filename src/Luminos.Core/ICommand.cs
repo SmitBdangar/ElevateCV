@@ -1,5 +1,5 @@
 using System;
-namespace Luminos.Core
+namespace Luminos.Core.Core
 {
     /// <summary>
     /// Interface for commands that can be executed, undone, and redone. [cite: 30]

@@ -411,6 +411,29 @@
         "build": {
           "build/net6.0/xunit.runner.visualstudio.props": {}
         }
+      },
+      "Luminos.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/Luminos.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Luminos.Core.dll": {}
+        }
+      },
+      "Luminos.Rendering/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "Luminos.Core": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Luminos.Rendering.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Luminos.Rendering.dll": {}
+        }
       }
     }
   },
@@ -932,10 +955,22 @@
         "xunit.runner.visualstudio.2.8.2.nupkg.sha512",
         "xunit.runner.visualstudio.nuspec"
       ]
+    },
+    "Luminos.Core/1.0.0": {
+      "type": "project",
+      "path": "../../src/Luminos.Core/Luminos.Core.csproj",
+      "msbuildProject": "../../src/Luminos.Core/Luminos.Core.csproj"
+    },
+    "Luminos.Rendering/1.0.0": {
+      "type": "project",
+      "path": "../../src/Luminos.Rendering/Luminos.Rendering.csproj",
+      "msbuildProject": "../../src/Luminos.Rendering/Luminos.Rendering.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net9.0": [
+      "Luminos.Core >= 1.0.0",
+      "Luminos.Rendering >= 1.0.0",
       "Microsoft.NET.Test.Sdk >= 17.12.0",
       "coverlet.collector >= 6.0.2",
       "xunit >= 2.9.2",
@@ -966,7 +1001,14 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\Admin\\github\\Luminos\\src\\Luminos.Core\\Luminos.Core.csproj": {
+              "projectPath": "C:\\Users\\Admin\\github\\Luminos\\src\\Luminos.Core\\Luminos.Core.csproj"
+            },
+            "C:\\Users\\Admin\\github\\Luminos\\src\\Luminos.Rendering\\Luminos.Rendering.csproj": {
+              "projectPath": "C:\\Users\\Admin\\github\\Luminos\\src\\Luminos.Rendering\\Luminos.Rendering.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

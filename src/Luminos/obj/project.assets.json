@@ -1,11 +1,49 @@
 {
   "version": 3,
   "targets": {
-    "net9.0-windows7.0": {}
+    "net9.0-windows7.0": {
+      "Luminos.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/Luminos.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Luminos.Core.dll": {}
+        }
+      },
+      "Luminos.Rendering/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "Luminos.Core": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Luminos.Rendering.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Luminos.Rendering.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Luminos.Core/1.0.0": {
+      "type": "project",
+      "path": "../Luminos.Core/Luminos.Core.csproj",
+      "msbuildProject": "../Luminos.Core/Luminos.Core.csproj"
+    },
+    "Luminos.Rendering/1.0.0": {
+      "type": "project",
+      "path": "../Luminos.Rendering/Luminos.Rendering.csproj",
+      "msbuildProject": "../Luminos.Rendering/Luminos.Rendering.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net9.0-windows7.0": []
+    "net9.0-windows7.0": [
+      "Luminos.Core >= 1.0.0",
+      "Luminos.Rendering >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\Admin\\.nuget\\packages\\": {}
@@ -31,7 +69,14 @@
       "frameworks": {
         "net9.0-windows7.0": {
           "targetAlias": "net9.0-windows",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\Admin\\github\\Luminos\\src\\Luminos.Core\\Luminos.Core.csproj": {
+              "projectPath": "C:\\Users\\Admin\\github\\Luminos\\src\\Luminos.Core\\Luminos.Core.csproj"
+            },
+            "C:\\Users\\Admin\\github\\Luminos\\src\\Luminos.Rendering\\Luminos.Rendering.csproj": {
+              "projectPath": "C:\\Users\\Admin\\github\\Luminos\\src\\Luminos.Rendering\\Luminos.Rendering.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
