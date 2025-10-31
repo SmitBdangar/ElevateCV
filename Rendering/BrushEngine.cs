@@ -22,7 +22,7 @@ namespace Luminos.Rendering
             int r2 = radius * radius;
 
             uint paintColor = IsEraser
-                ? 0xFFFFFFFF // ✅ White erase
+                ? 0xFFFFFFFF
                 : ColorToUint(BrushColor, BrushOpacity);
 
             for (int dy = -radius; dy <= radius; dy++)
