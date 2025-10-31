@@ -4,6 +4,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Input;
 using Avalonia;
 using Luminos.Core;
+using Luminos.Core.Core;  // ✅ Added this line for HistoryManager
 using Luminos.Rendering;
 using Avalonia.Platform;
 
@@ -72,7 +73,7 @@ namespace Luminos.Views
                 throw new InvalidOperationException("CanvasImage control not found in XAML.");
             canvasImage.Source = _canvasBitmap;
 
-            // ✅ Hook pointer events (you were missing this!)
+            // ✅ Hook pointer events
             PointerPressed += CanvasView_PointerPressed;
             PointerMoved += CanvasView_PointerMoved;
             PointerReleased += CanvasView_PointerReleased;

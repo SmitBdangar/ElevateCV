@@ -1,18 +1,15 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Luminos.Views.CanvasView"
-             
              Background="Gray" 
-             
              PointerPressed="CanvasView_PointerPressed"
              PointerMoved="CanvasView_PointerMoved"
              PointerReleased="CanvasView_PointerReleased">
-    
+
     <Image Name="CanvasImage"
            Stretch="None"
            HorizontalAlignment="Center"
            VerticalAlignment="Center"
-           RenderOptions.BitmapInterpolationMode="None">
-        </Image>
-    
+           RenderOptions.BitmapInterpolationMode="None" />
+           
 </UserControl>
