@@ -11,18 +11,21 @@ namespace Luminos
         {
             InitializeComponent();
 
-            ColorWheel.ColorChanged += color =>
+            // 🎨 Color Wheel → Update Brush Color
+            ColorWheel.ColorChanged += (Color color) =>
             {
                 BrushEngine.Instance.IsEraser = false;
                 BrushEngine.Instance.BrushColor = color;
             };
 
+            // ✏ Brush Size Slider → Update Brush Size
             BrushSizeSlider.PropertyChanged += (_, e) =>
             {
                 if (e.Property.Name == "Value")
                     BrushEngine.Instance.BrushSize = (int)BrushSizeSlider.Value;
             };
 
+            // 🧽 Eraser Button → Switch to Eraser
             EraserButton.Click += (_, __) =>
             {
                 BrushEngine.Instance.IsEraser = true;

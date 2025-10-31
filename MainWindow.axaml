@@ -4,32 +4,26 @@
     xmlns:views="clr-namespace:Luminos.Views"
     xmlns:controls="clr-namespace:Luminos.Controls"
     x:Class="Luminos.MainWindow"
-    Width="1000" Height="700"
+    Width="1200" Height="800"
+    Background="#2b2b2b"
     Title="Luminos">
 
-    <Grid RowDefinitions="Auto, *" Margin="8">
+    <Grid RowDefinitions="Auto,*" Margin="10">
 
-        <!-- Toolbar Wrapped to Fix Padding Issue -->
-        <Border Padding="8">
-            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Top">
+        <StackPanel Orientation="Horizontal" Spacing="20" VerticalAlignment="Top">
 
-                <!-- 🎨 Color Wheel -->
-                <controls:ColorWheel x:Name="ColorWheel" Width="150" Height="150"/>
+            <controls:ColorWheel x:Name="ColorWheel" Width="150" Height="150"/>
 
-                <!-- ✏ Brush Size -->
-                <StackPanel>
-                    <TextBlock Text="Brush Size" Margin="0,0,0,4"/>
-                    <Slider x:Name="BrushSizeSlider" Minimum="1" Maximum="50" Value="10" Width="160"/>
-                </StackPanel>
-
-                <!-- 🧽 Eraser -->
-                <Button x:Name="EraserButton" Content="Eraser" Width="80"/>
-
+            <StackPanel>
+                <TextBlock Text="Brush Size" Foreground="White"/>
+                <Slider x:Name="BrushSizeSlider" Minimum="1" Maximum="80" Value="10" Width="200"/>
             </StackPanel>
-        </Border>
 
-        <!-- Canvas workspace -->
-        <views:CanvasView Grid.Row="1" Margin="4" Background="White"/>
+            <Button x:Name="EraserButton" Content="Eraser" Width="100" Height="40"/>
+
+        </StackPanel>
+
+        <views:CanvasView Grid.Row="1" Background="White" Margin="4"/>
 
     </Grid>
 </Window>
