@@ -17,7 +17,7 @@ namespace Luminos.Views
         private Renderer _renderer;
         private WriteableBitmap _canvasBitmap;
         private bool _isDrawing = false;
-        
+
         // MVP Brush Settings (Hardcoded for Phase 1)
         private uint _activeColor = 0xFFFF0000; // Opaque Red (0xAARRGGBB)
         private float _brushRadius = 15.0f;
@@ -25,13 +25,13 @@ namespace Luminos.Views
         public CanvasView()
         {
             InitializeComponent();
-            
+
             // 1. Initialize Core Components (Using a standard size for MVP canvas)
             const int defaultWidth = 800;
             const int defaultHeight = 600;
             _document = new Document(defaultWidth, defaultHeight);
             _activeLayer = new Layer(defaultWidth, defaultHeight, "Base Layer");
-            
+
             _brushEngine = new BrushEngine();
             _renderer = new Renderer();
 
@@ -53,13 +53,17 @@ namespace Luminos.Views
         private void CanvasView_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
             var point = e.GetCurrentPoint(this);
-            if (point.Properties.IsLeftButtonPressed) // Left-click: paint [cite: 92]
+            if (point.Properties.IsLeftButtonPressed)
             {
                 _isDrawing = true;
+
+                // 1. Capture layer state BEFORE the stroke starts (deep copy).
+                _preStrokePixels = new uint[_activeLayer.Width * _activeLayer.Height];
+                Array.Copy(_activeLayer.GetPixels(), _preStrokePixels, _preStrokePixels.Length);
+
                 DrawAtPoint(point.Position.X, point.Position.Y);
                 e.Handled = true;
             }
-             ;// FUTURE: Right-click: pick color [cite: 93]
         }
 
         private void CanvasView_PointerMoved(object? sender, PointerEventArgs e)
@@ -70,6 +74,29 @@ namespace Luminos.Views
                 // FUTURE: Stroke smoothing (Phase 3) [cite: 81]
                 DrawAtPoint(point.Position.X, point.Position.Y);
                 e.Handled = true;
+            }
+        }
+
+        private void CanvasView_PointerReleased(object? sender, PointerReleasedEventArgs e)
+        {
+            if (_isDrawing)
+            {
+                _isDrawing = false;
+
+                // 2. Capture layer state AFTER the stroke is finished (deep copy).
+                uint[] postStrokePixels = new uint[_activeLayer.Width * _activeLayer.Height];
+                Array.Copy(_activeLayer.GetPixels(), postStrokePixels, postStrokePixels.Length);
+
+                // 3. Create and execute the command. This pushes it onto the undo stack.
+                if (_preStrokePixels != null)
+                {
+                    var command = new StrokeCommand(_activeLayer, _preStrokePixels, postStrokePixels);
+
+                    // NOTE: The pixels were already executed during the PointerMoved events.
+                    // We call Do() to register it, but we don't call Execute() again to avoid re-application.
+                    _historyManager.Do(command);
+                }
+                _preStrokePixels = null;
             }
         }
 
@@ -87,7 +114,7 @@ namespace Luminos.Views
 
             // Apply the brush engine logic to the active layer's pixel buffer
             _brushEngine.ApplyBrush(_activeLayer, docX, docY, _activeColor, _brushRadius);
-            
+
             // Re-render the canvas to reflect the change
             RedrawCanvas();
         }
@@ -99,13 +126,13 @@ namespace Luminos.Views
         {
             // Update the document's main buffer from the layer (simplified composition for MVP)
             // In a full application, a Layer Composer would run here.
-            
+
             // For MVP, we pass the active layer's pixels to the document buffer for the Renderer to read.
             Array.Copy(_activeLayer.GetPixels(), _document.GetPixelsRaw(), _document.Width * _document.Height);
-            
+
             _renderer.Render(_document, _canvasBitmap);
 
-             ;// Phase 2 Goal: update only dirty rectangle region [cite: 82]
+            ;// Phase 2 Goal: update only dirty rectangle region [cite: 82]
         }
     }
 }
