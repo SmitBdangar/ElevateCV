@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Admin\\github\\Luminos\\src\\Luminos\\Luminos.csproj": {}
+    "C:\\Users\\Admin\\github\\Luminos\\LuminosApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Admin\\github\\Luminos\\src\\Luminos\\Luminos.csproj": {
+    "C:\\Users\\Admin\\github\\Luminos\\LuminosApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Admin\\github\\Luminos\\src\\Luminos\\Luminos.csproj",
-        "projectName": "Luminos",
-        "projectPath": "C:\\Users\\Admin\\github\\Luminos\\src\\Luminos\\Luminos.csproj",
+        "projectUniqueName": "C:\\Users\\Admin\\github\\Luminos\\LuminosApp.csproj",
+        "projectName": "LuminosApp",
+        "projectPath": "C:\\Users\\Admin\\github\\Luminos\\LuminosApp.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Admin\\github\\Luminos\\src\\Luminos\\obj\\",
+        "outputPath": "C:\\Users\\Admin\\github\\Luminos\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"

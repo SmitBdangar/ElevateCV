@@ -1,0 +1,2 @@
+C:\Users\Admin\github\Luminos\obj\Debug\net9.0\LuminosApp.csproj.AssemblyReference.cache
+C:\Users\Admin\github\Luminos\obj\Debug\net9.0\Avalonia\Resources.Inputs.cache
