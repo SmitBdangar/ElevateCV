@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Luminos.Controls"
+             x:Class="Luminos.Views.ToolsPanel"
+             Padding="10"
+             >
+    <StackPanel Orientation="Vertical" Spacing="10">
+        
+        <TextBlock Text="Tool Panel" FontSize="16" FontWeight="Bold"/>
+
+        <controls:ColorWheel/>
+
+        <Separator/>
+
+        <TextBlock Text="Brush Size"/>
+        <Slider Name="BrushSizeSlider" 
+                Minimum="1" 
+                Maximum="100" 
+                Value="15" 
+                TickFrequency="5"/>
+
+        <TextBlock Text="Opacity"/>
+        <Slider Name="OpacitySlider" 
+                Minimum="0.0" 
+                Maximum="1.0" 
+                Value="1.0" 
+                TickFrequency="0.1"/>
+
+        </StackPanel>
+</UserControl>
