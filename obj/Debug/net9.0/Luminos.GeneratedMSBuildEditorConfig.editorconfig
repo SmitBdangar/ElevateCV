@@ -24,6 +24,9 @@ build_property.EnableCodeStyleSeverity =
 [C:/Users/Admin/github/Luminos/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[C:/Users/Admin/github/Luminos/Controls/ColorWheel.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [C:/Users/Admin/github/Luminos/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 

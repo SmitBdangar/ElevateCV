@@ -1,36 +1,35 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:views="clr-namespace:Luminos.Views"
-        x:Class="Luminos.MainWindow"
-        Width="1100" Height="700"
-        Title="Luminos">
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="clr-namespace:Luminos.Views"
+    xmlns:controls="clr-namespace:Luminos.Controls"
+    x:Class="Luminos.MainWindow"
+    Width="1000" Height="700"
+    Title="Luminos">
 
-    <DockPanel>
+    <Grid RowDefinitions="Auto, *" Margin="8">
 
-        <!-- Left Toolbar -->
-        <StackPanel DockPanel.Dock="Left" Width="90" Spacing="8" Margin="8">
+        <!-- Toolbar Wrapped to Fix Padding Issue -->
+        <Border Padding="8">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Top">
 
-            <TextBlock Text="Colors" FontWeight="Bold" Margin="0 0 0 6"/>
+                <!-- 🎨 Color Wheel -->
+                <controls:ColorWheel x:Name="ColorWheel" Width="150" Height="150"/>
 
-            <Border x:Name="RedColor"    Background="Red"    Width="40" Height="40"/>
-            <Border x:Name="GreenColor"  Background="Green"  Width="40" Height="40"/>
-            <Border x:Name="BlueColor"   Background="Blue"   Width="40" Height="40"/>
-            <Border x:Name="YellowColor" Background="Yellow" Width="40" Height="40"/>
-            <Border x:Name="WhiteColor"  Background="White"  Width="40" Height="40" BorderBrush="Black" BorderThickness="1"/>
-            <Border x:Name="BlackColor"  Background="Black"  Width="40" Height="40"/>
-            <Button x:Name="EraserButton" Content="Eraser" Width="80" Margin="4"/>
+                <!-- ✏ Brush Size -->
+                <StackPanel>
+                    <TextBlock Text="Brush Size" Margin="0,0,0,4"/>
+                    <Slider x:Name="BrushSizeSlider" Minimum="1" Maximum="50" Value="10" Width="160"/>
+                </StackPanel>
 
+                <!-- 🧽 Eraser -->
+                <Button x:Name="EraserButton" Content="Eraser" Width="80"/>
 
-            <TextBlock Text="Brush Size" Margin="0 16 0 6"/>
-            <Slider x:Name="BrushSizeSlider" Minimum="1" Maximum="60" Value="12"/>
-            <TextBlock Text="Opacity" Margin="0 16 0 6"/>
-            <Slider x:Name="BrushOpacitySlider" Minimum="0.05" Maximum="1" Value="0.4"/>
+            </StackPanel>
+        </Border>
 
+        <!-- Canvas workspace -->
+        <views:CanvasView Grid.Row="1" Margin="4" Background="White"/>
 
-        </StackPanel>
-
-        <!-- The Drawing Area -->
-        <views:CanvasView/>
-
-    </DockPanel>
+    </Grid>
 </Window>
