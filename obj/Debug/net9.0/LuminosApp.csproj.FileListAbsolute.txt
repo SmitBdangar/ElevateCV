@@ -1,2 +1,8 @@
 C:\Users\Admin\github\Luminos\obj\Debug\net9.0\LuminosApp.csproj.AssemblyReference.cache
 C:\Users\Admin\github\Luminos\obj\Debug\net9.0\Avalonia\Resources.Inputs.cache
+C:\Users\Admin\github\Luminos\obj\Debug\net9.0\Avalonia\resources
+C:\Users\Admin\github\Luminos\obj\Debug\net9.0\LuminosApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\github\Luminos\obj\Debug\net9.0\LuminosApp.AssemblyInfoInputs.cache
+C:\Users\Admin\github\Luminos\obj\Debug\net9.0\LuminosApp.AssemblyInfo.cs
+C:\Users\Admin\github\Luminos\obj\Debug\net9.0\LuminosApp.csproj.CoreCompileInputs.cache
+C:\Users\Admin\github\Luminos\obj\Debug\net9.0\LuminosApp.sourcelink.json

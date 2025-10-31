@@ -7,7 +7,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Luminos.Controls
 {
-    [cite_start]// Custom HSV wheel control 
+    // Custom HSV wheel control 
     public partial class ColorWheel : UserControl
     {
         // Define an ActiveColor property that other parts of the application can bind to

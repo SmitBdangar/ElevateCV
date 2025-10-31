@@ -1,6 +1,6 @@
 namespace Luminos.Core
 {
-    [cite_start]// Placeholder enum for planned blend modes. [cite: 73, 106]
+    // Placeholder enum for planned blend modes. [cite: 73, 106]
     public enum BlendMode
     {
         Normal, 
@@ -10,14 +10,14 @@ namespace Luminos.Core
     }
 
     /// <summary>
-    [cite_start]/// Represents a single layer within the Document. [cite: 29]
+    /// Represents a single layer within the Document. [cite: 29]
     /// </summary>
     public class Layer
     {
         public string Name { get; set; }
         public bool Visible { get; set; } = true;
         
-        [cite_start]// Opacity should be a value between 0.0 and 1.0. [cite: 73]
+        // Opacity should be a value between 0.0 and 1.0. [cite: 73]
         private float _opacity = 1.0f;
         public float Opacity
         {
@@ -27,7 +27,7 @@ namespace Luminos.Core
         
         public BlendMode Mode { get; set; } = BlendMode.Normal;
 
-        [cite_start]// The per-layer pixel buffer. [cite: 73]
+        // The per-layer pixel buffer. [cite: 73]
         public int Width { get; }
         public int Height { get; }
         private readonly uint[] _pixels;

@@ -12,7 +12,7 @@ namespace Luminos.Rendering
     /// </summary>
     public class Renderer
     {
-        [cite_start]// Corresponds to the API: Renderer.Render(Document doc, IRenderTarget target) [cite: 117]
+        // Corresponds to the API: Renderer.Render(Document doc, IRenderTarget target) [cite: 117]
         /// <summary>
         /// Renders the current composite (primary layer) to the target bitmap via fast memory copy.
         /// </summary>
@@ -27,7 +27,7 @@ namespace Luminos.Rendering
                 {
                     unsafe
                     {
-                        [cite_start]// Use unsafe Buffer.MemoryCopy for fast mem copies [cite: 83]
+                        // Use unsafe Buffer.MemoryCopy for fast mem copies [cite: 83]
                         int pixelCount = document.Width * document.Height;
                         long byteCount = (long)pixelCount * sizeof(uint);
                         

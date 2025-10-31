@@ -24,7 +24,7 @@ namespace Luminos.Rendering
             {
                 for (int x = minX; x < maxX; x++)
                 {
-                    [cite_start]// Check if the pixel is within the circular radius [cite: 76]
+                    // Check if the pixel is within the circular radius [cite: 76]
                     float dX = x - centerX;
                     float dY = y - centerY;
                     if (dX * dX + dY * dY <= radiusSq)
@@ -42,9 +42,9 @@ namespace Luminos.Rendering
         }
         
         /// <summary>
-        [cite_start]/// Performs the 'Source Over Destination' alpha blending using the premultiplied alpha formula[cite: 78].
+        /// Performs the 'Source Over Destination' alpha blending using the premultiplied alpha formula[cite: 78].
         /// </summary>
-        [cite_start]/// <remarks>Formula: outRGB = srcRGB + dstRGB* (1 - srcA); outA = srcA + dstA* (1 - srcA) [cite: 79, 80]</remarks>
+        /// <remarks>Formula: outRGB = srcRGB + dstRGB* (1 - srcA); outA = srcA + dstA* (1 - srcA) [cite: 79, 80]</remarks>
         private uint AlphaBlendPremultiplied(uint src, uint dst, float srcA)
         {
             // Extract and normalize components (0.0 to 1.0)
@@ -74,7 +74,7 @@ namespace Luminos.Rendering
             return (A << 24) | (R << 16) | (G << 8) | B;
         }
 
-        [cite_start]// Implements the Eraser tool functionality [cite: 103]
+        // Implements the Eraser tool functionality [cite: 103]
         public void ApplyEraser(Layer layer, int centerX, int centerY, float radius)
         {
             // Erasing is handled by painting with a transparent black source color (0x00000000).

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace Luminos.Core
 {
     /// <summary>
-    [cite_start]/// Manages the command stack for undo/redo functionality using commands/mementos. [cite: 30, 116]
+    /// Manages the command stack for undo/redo functionality using commands/mementos. [cite: 30, 116]
     /// </summary>
     public class HistoryManager
     {
@@ -11,7 +11,7 @@ namespace Luminos.Core
         private readonly Stack<ICommand> _redoStack = new Stack<ICommand>();
 
         /// <summary>
-        [cite_start]/// Executes a command and adds it to the undo stack. [cite: 116]
+        /// Executes a command and adds it to the undo stack. [cite: 116]
         /// </summary>
         public void Do(ICommand command)
         {
@@ -21,7 +21,7 @@ namespace Luminos.Core
         }
 
         /// <summary>
-        [cite_start]/// Undoes the last executed command. [cite: 116]
+        /// Undoes the last executed command. [cite: 116]
         /// </summary>
         public void Undo()
         {
@@ -34,7 +34,7 @@ namespace Luminos.Core
         }
 
         /// <summary>
-        [cite_start]/// Re-executes the last undone command. [cite: 116]
+        /// Re-executes the last undone command. [cite: 116]
         /// </summary>
         public void Redo()
         {

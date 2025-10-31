@@ -4,7 +4,7 @@ namespace Luminos.Rendering
 {
     /// <summary>
     /// Placeholder class for advanced blending logic to be implemented in Phase 2.
-    [cite_start]/// This module will contain static methods for Multiply, Screen, Overlay, etc..
+    /// This module will contain static methods for Multiply, Screen, Overlay, etc..
     /// </summary>
     public static class BlendModes
     {

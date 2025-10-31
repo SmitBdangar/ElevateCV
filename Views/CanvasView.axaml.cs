@@ -52,13 +52,13 @@ namespace Luminos.Views
         private void CanvasView_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
             var point = e.GetCurrentPoint(this);
-            [cite_start]if (point.Properties.IsLeftButtonPressed) // Left-click: paint [cite: 92]
+            if (point.Properties.IsLeftButtonPressed) // Left-click: paint [cite: 92]
             {
                 _isDrawing = true;
                 DrawAtPoint(point.Position.X, point.Position.Y);
                 e.Handled = true;
             }
-            [cite_start] ;// FUTURE: Right-click: pick color [cite: 93]
+             ;// FUTURE: Right-click: pick color [cite: 93]
         }
 
         private void CanvasView_PointerMoved(object? sender, PointerEventArgs e)
@@ -66,7 +66,7 @@ namespace Luminos.Views
             if (_isDrawing)
             {
                 var point = e.GetCurrentPoint(this);
-                [cite_start]// FUTURE: Stroke smoothing (Phase 3) [cite: 81]
+                // FUTURE: Stroke smoothing (Phase 3) [cite: 81]
                 DrawAtPoint(point.Position.X, point.Position.Y);
                 e.Handled = true;
             }
@@ -104,7 +104,7 @@ namespace Luminos.Views
             
             _renderer.Render(_document, _canvasBitmap);
 
-            [cite_start] ;// Phase 2 Goal: update only dirty rectangle region [cite: 82]
+             ;// Phase 2 Goal: update only dirty rectangle region [cite: 82]
         }
     }
 }
