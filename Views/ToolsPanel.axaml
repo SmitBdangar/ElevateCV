@@ -8,7 +8,7 @@
         
         <TextBlock Text="Tool Panel" FontSize="16" FontWeight="Bold"/>
 
-        <controls:ColorWheel/>
+        <controls:ColorWheel Name="ColorWheelControl" MinHeight="180" MinWidth="180"/>
 
         <Separator/>
 

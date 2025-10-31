@@ -1,12 +1,14 @@
-using System;
+using System.Linq;
 using Avalonia.Controls;
-using System.ComponentModel;
 using Avalonia.Controls.ApplicationLifetimes;
-
+using Avalonia.Interactivity;
+using Avalonia.VisualTree;
+using Avalonia.Platform.Storage;
+using Luminos.Views;
+using Luminos.Core;
 
 namespace Luminos
 {
-    // Note: The class name corresponds to the namespace 'Luminos' and class 'MainWindow'
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -14,12 +16,41 @@ namespace Luminos
             InitializeComponent();
         }
 
-        // FUTURE: Override OnKeyDown to handle global shortcuts like Ctrl+Z/Ctrl+Y (Undo/Redo)
-
         protected override void OnClosing(WindowClosingEventArgs e)
         {
             base.OnClosing(e);
-            // your close logic here
         }
+
+        private CanvasView? FindCanvasView()
+        {
+            return this.GetVisualDescendants()
+                       .OfType<CanvasView>()
+                       .FirstOrDefault();
+        }
+
+        public async void OnExportPngClicked(object sender, RoutedEventArgs e)
+        {
+            var canvas = FindCanvasView();
+            if (canvas == null)
+                return;
+
+            var storageProvider = TopLevel.GetTopLevel(this)?.StorageProvider;
+            if (storageProvider == null)
+                return;
+
+            var file = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Export PNG",
+                SuggestedFileName = "Luminos_Image",
+                FileTypeChoices = new[] { FilePickerFileTypes.ImagePng }
+            });
+
+            // ✅ Defensive null-check
+            if (file == null || canvas.CanvasBitmap == null)
+                return;
+
+            await FileHandler.ExportPng(canvas.CanvasBitmap, file);
+        }
+
     }
 }
