@@ -1,3 +1,4 @@
+using System;
 using Luminos.Core; 
 using Avalonia.Media.Imaging; // Required for WriteableBitmap
 using Avalonia; 

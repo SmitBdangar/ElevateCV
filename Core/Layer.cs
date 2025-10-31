@@ -1,3 +1,4 @@
+using System;
 namespace Luminos.Core
 {
     // Placeholder enum for planned blend modes. [cite: 73, 106]

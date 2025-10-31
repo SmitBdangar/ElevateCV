@@ -1,5 +1,8 @@
+using System;
 using Avalonia.Controls;
 using System.ComponentModel;
+using Avalonia.Controls.ApplicationLifetimes;
+
 
 namespace Luminos
 {
@@ -12,11 +15,11 @@ namespace Luminos
         }
 
         // FUTURE: Override OnKeyDown to handle global shortcuts like Ctrl+Z/Ctrl+Y (Undo/Redo)
-        
-        protected override void OnClosing(CancelEventArgs e)
+
+        protected override void OnClosing(WindowClosingEventArgs e)
         {
-            // FUTURE: Implement logic to prompt user to save changes before closing
             base.OnClosing(e);
+            // your close logic here
         }
     }
 }

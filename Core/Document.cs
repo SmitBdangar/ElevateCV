@@ -1,3 +1,7 @@
+using System;
+using System;
+
+
 namespace Luminos.Core
 {
     /// <summary>
@@ -10,7 +14,7 @@ namespace Luminos.Core
         public int Height { get; }
 
         // Raw pixel data buffer: uint[] ARGB (0xAARRGGBB).
-        private uint[] _pixels; 
+        private uint[] _pixels;
 
         public Document(int width, int height)
         {
@@ -32,7 +36,7 @@ namespace Luminos.Core
         {
             // For MVP, we return the full buffer for simplicity.
             // Phase 2 will implement delta records for optimization.
-            return _pixels; 
+            return _pixels;
         }
 
         // Method to get the full raw buffer (used by Renderer/Layer Composer)
