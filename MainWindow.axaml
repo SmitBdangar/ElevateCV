@@ -1,29 +1,9 @@
-<Window
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:views="clr-namespace:Luminos.Views"
-    xmlns:controls="clr-namespace:Luminos.Controls"
-    x:Class="Luminos.MainWindow"
-    Width="1200" Height="800"
-    Background="#2b2b2b"
-    Title="Luminos">
-
-    <Grid RowDefinitions="Auto,*" Margin="10">
-
-        <StackPanel Orientation="Horizontal" Spacing="20" VerticalAlignment="Top">
-
-            <controls:ColorWheel x:Name="ColorWheel" Width="150" Height="150"/>
-
-            <StackPanel>
-                <TextBlock Text="Brush Size" Foreground="White"/>
-                <Slider x:Name="BrushSizeSlider" Minimum="1" Maximum="80" Value="10" Width="200"/>
-            </StackPanel>
-
-            <Button x:Name="EraserButton" Content="Eraser" Width="100" Height="40"/>
-
-        </StackPanel>
-
-        <views:CanvasView Grid.Row="1" Background="White" Margin="4"/>
-
-    </Grid>
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Luminos.MainWindow"
+        Title="Luminos">
+    Welcome to Avalonia!
 </Window>

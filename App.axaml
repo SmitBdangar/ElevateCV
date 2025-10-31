@@ -1,10 +1,10 @@
-<Application x:Class="Luminos.App"
-             xmlns="https://github.com/avaloniaui"
+<Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             RequestedThemeVariant="Dark">
+             x:Class="Luminos.App"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
-  <Application.Styles>
-    <FluentTheme />
-  </Application.Styles>
-
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
 </Application>

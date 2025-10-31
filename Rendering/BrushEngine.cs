@@ -1,78 +1,84 @@
-using Avalonia.Media;
-using Luminos.Core;
+using Luminos.Core; 
 using System;
 
 namespace Luminos.Rendering
 {
     public class BrushEngine
     {
-        public static BrushEngine Instance { get; } = new BrushEngine();
-
-        public int BrushSize { get; set; } = 12;
-        public Color BrushColor { get; set; } = Colors.Black;
-        public double BrushOpacity { get; set; } = 1.0;
-        public bool IsEraser { get; set; } = false;
-
-        private BrushEngine() { }
-
-        public void ApplyBrush(Document document, int x, int y)
+        /// <summary>
+        /// Applies a circular brush stroke at the specified coordinates on a given layer.
+        /// </summary>
+        public void ApplyBrush(Layer layer, int centerX, int centerY, uint brushColor, float radius)
         {
-            int r = BrushSize;
-            int r2 = r * r;
+            float srcA = ((brushColor >> 24) & 0xFF) / 255.0f;
+            uint[] layerPixels = layer.GetPixels();
 
-            for (int dy = -r; dy <= r; dy++)
-            for (int dx = -r; dx <= r; dx++)
+            int minX = Math.Max(0, (int)(centerX - radius));
+            int maxX = Math.Min(layer.Width, (int)(centerX + radius));
+            int minY = Math.Max(0, (int)(centerY - radius));
+            int maxY = Math.Min(layer.Height, (int)(centerY + radius));
+            
+            float radiusSq = radius * radius;
+
+            for (int y = minY; y < maxY; y++)
             {
-                if (dx * dx + dy * dy <= r2)
+                for (int x = minX; x < maxX; x++)
                 {
-                    int px = x + dx;
-                    int py = y + dy;
-
-                    if (px >= 0 && px < document.Width && py >= 0 && py < document.Height)
+                    [cite_start]// Check if the pixel is within the circular radius [cite: 76]
+                    float dX = x - centerX;
+                    float dY = y - centerY;
+                    if (dX * dX + dY * dY <= radiusSq)
                     {
-                        int index = py * document.Width + px;
-                        uint src = document.Pixels[index];
-                        uint blended = IsEraser
-                            ? ErasePixel(src, BrushOpacity)
-                            : BlendPixel(src, BrushColor, BrushOpacity);
+                        int index = y * layer.Width + x;
+                        uint dstPixel = layerPixels[index];
 
-                        document.Pixels[index] = blended;
+                        // Blend the brush color (source) over the existing layer pixel (destination)
+                        uint resultPixel = AlphaBlendPremultiplied(brushColor, dstPixel, srcA);
+                        
+                        layerPixels[index] = resultPixel;
                     }
                 }
             }
         }
-
-        private static uint BlendPixel(uint dst, Color c, double opacity)
+        
+        /// <summary>
+        [cite_start]/// Performs the 'Source Over Destination' alpha blending using the premultiplied alpha formula[cite: 78].
+        /// </summary>
+        [cite_start]/// <remarks>Formula: outRGB = srcRGB + dstRGB* (1 - srcA); outA = srcA + dstA* (1 - srcA) [cite: 79, 80]</remarks>
+        private uint AlphaBlendPremultiplied(uint src, uint dst, float srcA)
         {
-            byte db = (byte)(dst & 255);
-            byte dg = (byte)((dst >> 8) & 255);
-            byte dr = (byte)((dst >> 16) & 255);
-            byte da = (byte)((dst >> 24) & 255);
+            // Extract and normalize components (0.0 to 1.0)
+            float dstA = ((dst >> 24) & 0xFF) / 255.0f;
+            float dstR = ((dst >> 16) & 0xFF) / 255.0f;
+            float dstG = ((dst >> 8) & 0xFF) / 255.0f;
+            float dstB = (dst & 0xFF) / 255.0f;
 
-            byte sr = c.R;
-            byte sg = c.G;
-            byte sb = c.B;
-            byte sa = (byte)(c.A * opacity);
+            float srcR = ((src >> 16) & 0xFF) / 255.0f;
+            float srcG = ((src >> 8) & 0xFF) / 255.0f;
+            float srcB = (src & 0xFF) / 255.0f;
+            
+            float invSrcA = 1.0f - srcA;
 
-            double a = sa / 255.0;
+            // Apply the Alpha Blending formula
+            float outR = srcR * srcA + dstR * invSrcA;
+            float outG = srcG * srcA + dstG * invSrcA;
+            float outB = srcB * srcA + dstB * invSrcA;
+            float outA = srcA + dstA * invSrcA;
 
-            byte r = (byte)(dr * (1 - a) + sr * a);
-            byte g = (byte)(dg * (1 - a) + sg * a);
-            byte b = (byte)(db * (1 - a) + sb * a);
-            byte aOut = (byte)Math.Min(255, da + sa * (1 - da / 255.0));
+            // Convert back to 0-255 integer range and recombine
+            uint A = (uint)Math.Clamp(outA * 255.0f, 0, 255);
+            uint R = (uint)Math.Clamp(outR * 255.0f, 0, 255);
+            uint G = (uint)Math.Clamp(outG * 255.0f, 0, 255);
+            uint B = (uint)Math.Clamp(outB * 255.0f, 0, 255);
 
-            return (uint)(aOut << 24 | r << 16 | g << 8 | b);
+            return (A << 24) | (R << 16) | (G << 8) | B;
         }
 
-        private static uint ErasePixel(uint dst, double opacity)
+        [cite_start]// Implements the Eraser tool functionality [cite: 103]
+        public void ApplyEraser(Layer layer, int centerX, int centerY, float radius)
         {
-            byte db = (byte)(dst & 255);
-            byte dg = (byte)((dst >> 8) & 255);
-            byte dr = (byte)((dst >> 16) & 255);
-            byte da = (byte)((dst >> 24) & 255);
-
-            byte aOut = (byte)(da * (1 - opacity));
-            return (uint)(aOut << 24 | dr << 16 | dg << 8 | db);
+            // Erasing is handled by painting with a transparent black source color (0x00000000).
+            ApplyBrush(layer, centerX, centerY, 0x00000000, radius); 
         }
     }
 }

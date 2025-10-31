@@ -1,18 +1,55 @@
-using SkiaSharp;
-
-namespace Luminos.Core;
-
-public class Layer
+namespace Luminos.Core
 {
-    public SKBitmap Bitmap { get; private set; }
-
-    private Layer(SKBitmap bitmap)
+    [cite_start]// Placeholder enum for planned blend modes. [cite: 73, 106]
+    public enum BlendMode
     {
-        Bitmap = bitmap;
+        Normal, 
+        Multiply,
+        Screen,
+        Overlay
     }
 
-    public static Layer CreateBlank(int width, int height)
+    /// <summary>
+    [cite_start]/// Represents a single layer within the Document. [cite: 29]
+    /// </summary>
+    public class Layer
     {
-        return new Layer(new SKBitmap(width, height));
+        public string Name { get; set; }
+        public bool Visible { get; set; } = true;
+        
+        [cite_start]// Opacity should be a value between 0.0 and 1.0. [cite: 73]
+        private float _opacity = 1.0f;
+        public float Opacity
+        {
+            get => _opacity;
+            set => _opacity = Math.Clamp(value, 0.0f, 1.0f);
+        }
+        
+        public BlendMode Mode { get; set; } = BlendMode.Normal;
+
+        [cite_start]// The per-layer pixel buffer. [cite: 73]
+        public int Width { get; }
+        public int Height { get; }
+        private readonly uint[] _pixels;
+
+        public Layer(int width, int height, string name = "Layer")
+        {
+            if (width <= 0 || height <= 0)
+            {
+                throw new ArgumentException("Width and Height must be positive.");
+            }
+            Width = width;
+            Height = height;
+            Name = name;
+            
+            _pixels = new uint[Width * Height];
+        }
+
+        public uint[] GetPixels() => _pixels;
+
+        public void Clear()
+        {
+            Array.Clear(_pixels, 0, _pixels.Length);
+        }
     }
 }

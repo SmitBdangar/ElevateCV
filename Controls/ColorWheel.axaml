@@ -1,9 +1,0 @@
-<UserControl
-    x:Class="Luminos.Controls.ColorWheel"
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-
-    <Canvas x:Name="WheelCanvas"
-            Width="150"
-            Height="150"/>
-</UserControl>
