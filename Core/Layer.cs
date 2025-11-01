@@ -28,6 +28,9 @@ namespace Luminos.Core
         public int Height { get; }
         private readonly uint[] _pixels;
 
+        // ✅ NEW: Track only changed region of the layer (used for incremental redraw)
+        public IntRect DirtyRegion { get; private set; } = default;
+
         public Layer(int width, int height, string name = "Layer")
         {
             if (width <= 0 || height <= 0)
@@ -42,5 +45,19 @@ namespace Luminos.Core
         public uint[] GetPixels() => _pixels;
 
         public void Clear() => Array.Clear(_pixels, 0, _pixels.Length);
+
+        /// <summary>
+        /// ✅ Merge new dirty region with existing accumulated dirty region.
+        /// Called by StrokeCommand and CanvasView during drawing.
+        /// </summary>
+        public void MarkDirty(IntRect rect)
+        {
+            DirtyRegion = IntRect.Union(DirtyRegion, rect);
+        }
+
+        /// <summary>
+        /// ✅ Reset dirty region after redraw (Renderer will call this later).
+        /// </summary>
+        public void ClearDirty() => DirtyRegion = default;
     }
 }
