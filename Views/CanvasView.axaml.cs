@@ -3,12 +3,13 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Input;
 using Avalonia;
-using Luminos.Core;
+using Luminos.Core; // This now provides Document, Layer, and StrokeCommand
+// REMOVED: using Luminos.Core.Core; // Was incorrect/redundant after namespace fix
 using Luminos.Core.Core;
 using Luminos.Rendering;
 using Avalonia.Platform;
-using System.Collections.Generic; // Added for List<Layer>
-using System.Linq; // Added for Linq extension methods
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Luminos.Views
 {
@@ -161,7 +162,7 @@ namespace Luminos.Views
         /// </summary>
         private void RedrawCanvas()
         {
-            // REFACTOR: 1. Composite all layers (via the Compositor) into the Document's final pixel buffer.
+            // 1. Composite all layers (via the Compositor) into the Document's final pixel buffer.
             LayerCompositor.Composite(_document, _layers);
             
             // 2. Render the Document's composite buffer to the Avalonia WriteableBitmap.
