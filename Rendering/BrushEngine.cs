@@ -7,13 +7,17 @@ namespace Luminos.Rendering
     {
         public void ApplyBrush(Layer layer, int centerX, int centerY, uint brushColor, float radius)
         {
+            // Clamp center coordinates to valid range
+            centerX = Math.Clamp(centerX, 0, layer.Width - 1);
+            centerY = Math.Clamp(centerY, 0, layer.Height - 1);
+
             float srcA = ((brushColor >> 24) & 0xFF) / 255.0f;
             uint[] layerPixels = layer.GetPixels();
 
             int minX = Math.Max(0, (int)(centerX - radius));
-            int maxX = Math.Min(layer.Width, (int)(centerX + radius));
+            int maxX = Math.Min(layer.Width, (int)(centerX + radius + 1)); // Add +1 for inclusive
             int minY = Math.Max(0, (int)(centerY - radius));
-            int maxY = Math.Min(layer.Height, (int)(centerY + radius));
+            int maxY = Math.Min(layer.Height, (int)(centerY + radius + 1)); // Add +1 for inclusive
 
             float radiusSq = radius * radius;
 

@@ -1,6 +1,5 @@
 using System;
 using Luminos.Rendering;
-using System;
 
 namespace Luminos.Rendering
 {

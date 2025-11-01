@@ -3,7 +3,6 @@ using Luminos.Core;
 using Avalonia.Media.Imaging; // Required for WriteableBitmap
 using Avalonia; 
 using Avalonia.Platform;
-using System;
 using System.Runtime.CompilerServices;
 
 namespace Luminos.Rendering

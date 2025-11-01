@@ -1,12 +1,10 @@
 using System.Linq;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using Avalonia.Platform.Storage;
 using Luminos.Views;
 using Luminos.Core;
-
 
 namespace Luminos
 {
@@ -15,36 +13,41 @@ namespace Luminos
         public MainWindow()
         {
             InitializeComponent();
+
+            // Optional: Locate ToolsPanel and set initial color when needed
+            var toolsPanel = this.GetVisualDescendants()
+                                 .OfType<ToolsPanel>()
+                                 .FirstOrDefault();
+            // Example (uncomment if your ToolsPanel exposes a SetColor method):
+            // toolsPanel?.SetColor(0xFFFF0000);
         }
 
-        // Helper to find the CanvasView instance
-        private CanvasView? FindCanvasView()
-        {
-            return this.GetVisualDescendants()
-                       .OfType<CanvasView>()
-                       .FirstOrDefault();
-        }
+        // Locate the CanvasView instance in the visual tree
+        private CanvasView? FindCanvasView() =>
+            this.GetVisualDescendants()
+                .OfType<CanvasView>()
+                .FirstOrDefault();
 
         // --- FILE MENU COMMANDS ---
         public void OnNewClicked(object? sender, RoutedEventArgs e)
         {
-            // TODO: Implement new document
+            // TODO: Implement new document creation
         }
 
         public void OnOpenClicked(object? sender, RoutedEventArgs e)
         {
-            // TODO: Implement open
+            // TODO: Implement open dialog + load
         }
 
         public void OnSaveClicked(object? sender, RoutedEventArgs e)
         {
-            // TODO: Implement save
+            // TODO: Implement save project
         }
 
         public async void OnExportPngClicked(object? sender, RoutedEventArgs e)
         {
             var canvas = FindCanvasView();
-            if (canvas == null)
+            if (canvas?.CanvasBitmap == null)
                 return;
 
             var storageProvider = TopLevel.GetTopLevel(this)?.StorageProvider;
@@ -58,21 +61,24 @@ namespace Luminos
                 FileTypeChoices = new[] { FilePickerFileTypes.ImagePng }
             });
 
-            if (file == null || canvas.CanvasBitmap == null)
+            if (file == null)
                 return;
 
             await FileHandler.ExportPng(canvas.CanvasBitmap, file);
         }
 
         // --- EDIT MENU COMMANDS ---
-        public void OnUndoClicked(object? sender, RoutedEventArgs e)
-        {
+        public void OnUndoClicked(object? sender, RoutedEventArgs e) =>
             FindCanvasView()?.Undo();
-        }
 
-        public void OnRedoClicked(object? sender, RoutedEventArgs e)
-        {
+        public void OnRedoClicked(object? sender, RoutedEventArgs e) =>
             FindCanvasView()?.Redo();
+
+        private void UpdateStatus(string message)
+        {
+            var statusText = this.FindControl<TextBlock>("StatusText");
+            if (statusText != null)
+                statusText.Text = message;
         }
     }
 }

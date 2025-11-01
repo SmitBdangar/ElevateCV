@@ -63,7 +63,10 @@ namespace Luminos.Views
 
         private void CanvasView_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            var p = e.GetCurrentPoint(this);
+            var image = this.FindControl<Image>("CanvasImage");
+            if (image == null) return;
+
+            var p = e.GetCurrentPoint(image); // Get position relative to Image
             if (!p.Properties.IsLeftButtonPressed) return;
 
             _isDrawing = true;
@@ -85,7 +88,10 @@ namespace Luminos.Views
         {
             if (!_isDrawing) return;
 
-            var p = e.GetCurrentPoint(this);
+            var image = this.FindControl<Image>("CanvasImage");
+            if (image == null) return;
+
+            var p = e.GetCurrentPoint(image); // Get position relative to Image
             DrawAtPoint(p.Position.X, p.Position.Y);
             e.Handled = true;
         }
@@ -93,28 +99,32 @@ namespace Luminos.Views
         private void CanvasView_PointerReleased(object? sender, PointerReleasedEventArgs e)
         {
             if (!_isDrawing) return;
+
+            // Finalize stroke first
+            if (!_currentDirtyRect.IsEmpty && _preStrokeDeltaPixels != null)
+            {
+                uint[] postPixels = PixelUtils.GetRegionPixels(
+                    _activeLayer.GetPixels(), _activeLayer.Width, _currentDirtyRect);
+
+                _historyManager.Do(new StrokeCommand(
+                    _activeLayer,
+                    _currentDirtyRect,
+                    _preStrokeDeltaPixels,
+                    postPixels));
+
+                _preStrokeDeltaPixels = null;
+                _currentDirtyRect = default;
+            }
+
+            // Reset drawing state LAST
             _isDrawing = false;
-
-            if (_currentDirtyRect.IsEmpty || _preStrokeDeltaPixels == null) return;
-
-            uint[] postPixels = PixelUtils.GetRegionPixels(
-                _activeLayer.GetPixels(), _activeLayer.Width, _currentDirtyRect);
-
-            _historyManager.Do(new StrokeCommand(
-                _activeLayer, 
-                _currentDirtyRect, 
-                _preStrokeDeltaPixels, 
-                postPixels));
-
-            _preStrokeDeltaPixels = null;
-            _currentDirtyRect = default;
             e.Handled = true;
         }
 
         private void DrawAtPoint(double x, double y)
         {
-            int px = (int)x;
-            int py = (int)y;
+            int px = (int)Math.Clamp(x, 0, _document.Width - 1);
+            int py = (int)Math.Clamp(y, 0, _document.Height - 1);
 
             uint baseAlpha = (_activeColor >> 24) & 0xFF;
             uint newAlpha = (uint)(baseAlpha * _brushOpacity);
@@ -123,7 +133,14 @@ namespace Luminos.Views
             _brushEngine.ApplyBrush(_activeLayer, px, py, dynamicColor, _brushRadius);
 
             int r = (int)Math.Ceiling(_brushRadius);
-            IntRect brushRect = new(px - r, py - r, r * 2, r * 2);
+
+            // Clamp dirty rect to canvas bounds
+            int rectX = Math.Max(0, px - r);
+            int rectY = Math.Max(0, py - r);
+            int rectW = Math.Min(_document.Width - rectX, r * 2);
+            int rectH = Math.Min(_document.Height - rectY, r * 2);
+
+            IntRect brushRect = new(rectX, rectY, rectW, rectH);
 
             _currentDirtyRect = IntRect.Union(_currentDirtyRect, brushRect);
             _activeLayer.MarkDirty(_currentDirtyRect);
@@ -135,10 +152,25 @@ namespace Luminos.Views
         {
             LayerCompositor.Composite(_document, _layers);
             _renderer.Render(_document, _canvasBitmap);
+
+            // Clear dirty regions after compositing
+            foreach (var layer in _layers)
+            {
+                layer.ClearDirty();
+            }
         }
 
         // === Undo / Redo Exposed to MainWindow ===
-        public void Undo() => _historyManager.Undo();
-        public void Redo() => _historyManager.Redo();
+        public void Undo()
+        {
+            _historyManager.Undo();
+            RedrawCanvas(); // Add this
+        }
+
+        public void Redo()
+        {
+            _historyManager.Redo();
+            RedrawCanvas(); // Add this
+        }
     }
 }

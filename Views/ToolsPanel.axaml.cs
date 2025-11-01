@@ -3,9 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia;
 using Avalonia.Media;
-using Avalonia.VisualTree;        // For FindAncestorOfType()           // For Color type
-using Luminos.Views;              // For CanvasView
-
+using Avalonia.VisualTree;
+using System.Linq;
 
 namespace Luminos.Views
 {
@@ -17,18 +16,32 @@ namespace Luminos.Views
         {
             InitializeComponent();
 
-            this.FindControl<Slider>("BrushSizeSlider")!.ValueChanged += BrushSetting_ValueChanged;
-            this.FindControl<Slider>("OpacitySlider")!.ValueChanged += BrushSetting_ValueChanged;
-            this.FindControl<Controls.ColorWheel>("ColorWheelControl")!.PropertyChanged += ColorWheel_PropertyChanged;
+            var sizeSlider = this.FindControl<Slider>("BrushSizeSlider");
+            var opacitySlider = this.FindControl<Slider>("OpacitySlider");
+            var colorWheel = this.FindControl<Controls.ColorWheel>("ColorWheelControl");
+
+            if (sizeSlider != null)
+                sizeSlider.ValueChanged += BrushSetting_ValueChanged;
+            
+            if (opacitySlider != null)
+                opacitySlider.ValueChanged += BrushSetting_ValueChanged;
+            
+            if (colorWheel != null)
+                colorWheel.ActiveColorChanged += ColorWheel_ColorChanged;
         }
 
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnAttachedToVisualTree(e);
 
-            // Find nearest CanvasView in the logical tree
-           _canvas = this.FindAncestorOfType<CanvasView>();
-
+            // Find CanvasView by traversing up to Window then searching descendants
+            var window = this.FindAncestorOfType<Window>();
+            if (window != null)
+            {
+                _canvas = window.GetVisualDescendants()
+                                .OfType<CanvasView>()
+                                .FirstOrDefault();
+            }
         }
 
         private void BrushSetting_ValueChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
@@ -50,15 +63,10 @@ namespace Luminos.Views
             }
         }
 
-        private void ColorWheel_PropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+        private void ColorWheel_ColorChanged(object? sender, Color color)
         {
             if (_canvas == null) return;
-
-            if (e.Property.Name == nameof(Controls.ColorWheel.ActiveColor) && sender is Controls.ColorWheel colorWheel)
-            {
-                Color c = colorWheel.ActiveColor;
-                _canvas.ActiveColor = (uint)((c.A << 24) | (c.R << 16) | (c.G << 8) | c.B);
-            }
+            _canvas.ActiveColor = (uint)((color.A << 24) | (color.R << 16) | (color.G << 8) | color.B);
         }
     }
 }
