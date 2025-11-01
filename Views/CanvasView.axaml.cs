@@ -4,16 +4,24 @@ using Avalonia.Media.Imaging;
 using Avalonia.Input;
 using Avalonia;
 using Luminos.Core;
-using Luminos.Core.Core;  // ✅ Added this line for HistoryManager
+using Luminos.Core.Core;
 using Luminos.Rendering;
 using Avalonia.Platform;
+using System.Collections.Generic; // Added for List<Layer>
+using System.Linq; // Added for Linq extension methods
 
 namespace Luminos.Views
 {
     public partial class CanvasView : UserControl
     {
         private Document _document;
-        private Layer _activeLayer;
+        
+        // REFACTOR: Manages all layers
+        private readonly List<Layer> _layers = new List<Layer>();
+        
+        // Convenience property: Assumes the top layer is the one we draw on for the MVP
+        private Layer _activeLayer => _layers.Count > 0 ? _layers.First() : throw new InvalidOperationException("Layer list empty.");
+        
         private BrushEngine _brushEngine;
         private Renderer _renderer;
         private WriteableBitmap _canvasBitmap;
@@ -23,12 +31,12 @@ namespace Luminos.Views
 
         private uint[]? _preStrokePixels;
 
-        // Brush settings
-        private uint _activeColor = 0xFFFF0000; // ARGB Red
+        // Brush settings (will be wired via ViewModel in the future)
+        private uint _activeColor = 0xFFFF0000; // Opaque Red
         private float _brushRadius = 15.0f;
         private float _brushOpacity = 1.0f;
 
-        // Public properties (used by ToolsPanel)
+        // Public properties (used by ToolsPanel for simple data passing)
         public uint ActiveColor
         {
             get => _activeColor;
@@ -47,7 +55,7 @@ namespace Luminos.Views
             set => _brushOpacity = value;
         }
 
-        // Expose bitmap for Export
+        // Expose bitmap for FileHandler (Export)
         public WriteableBitmap CanvasBitmap => _canvasBitmap;
 
         public CanvasView()
@@ -58,7 +66,10 @@ namespace Luminos.Views
             const int defaultHeight = 600;
 
             _document = new Document(defaultWidth, defaultHeight);
-            _activeLayer = new Layer(defaultWidth, defaultHeight, "Base Layer");
+            
+            // REFACTOR: Create and add the initial layer to the list
+            _layers.Add(new Layer(defaultWidth, defaultHeight, "Base Layer"));
+            
             _brushEngine = new BrushEngine();
             _renderer = new Renderer();
 
@@ -73,7 +84,7 @@ namespace Luminos.Views
                 throw new InvalidOperationException("CanvasImage control not found in XAML.");
             canvasImage.Source = _canvasBitmap;
 
-            // ✅ Hook pointer events
+            // Hook pointer events
             PointerPressed += CanvasView_PointerPressed;
             PointerMoved += CanvasView_PointerMoved;
             PointerReleased += CanvasView_PointerReleased;
@@ -89,6 +100,7 @@ namespace Luminos.Views
             {
                 _isDrawing = true;
 
+                // Capture layer state BEFORE the stroke starts (full snapshot for MVP undo)
                 _preStrokePixels = new uint[_activeLayer.Width * _activeLayer.Height];
                 Array.Copy(_activeLayer.GetPixels(), _preStrokePixels, _preStrokePixels.Length);
 
@@ -113,11 +125,13 @@ namespace Luminos.Views
             {
                 _isDrawing = false;
 
+                // Capture layer state AFTER the stroke is finished (full snapshot for MVP redo)
                 uint[] postStrokePixels = new uint[_activeLayer.Width * _activeLayer.Height];
                 Array.Copy(_activeLayer.GetPixels(), postStrokePixels, postStrokePixels.Length);
 
                 if (_preStrokePixels != null)
                 {
+                    // Create and register the Undo/Redo command
                     var command = new StrokeCommand(_activeLayer, _preStrokePixels, postStrokePixels);
                     _historyManager.Do(command);
                 }
@@ -132,6 +146,7 @@ namespace Luminos.Views
             int docX = (int)x;
             int docY = (int)y;
 
+            // Calculate dynamic alpha based on brush opacity slider
             uint baseAlpha = (_activeColor >> 24) & 0xFF;
             uint newAlpha = (uint)(baseAlpha * _brushOpacity);
             uint dynamicColor = (newAlpha << 24) | (_activeColor & 0x00FFFFFF);
@@ -141,9 +156,15 @@ namespace Luminos.Views
             RedrawCanvas();
         }
 
+        /// <summary>
+        /// Orchestrates the rendering pipeline: Compose layers -> Render to Bitmap.
+        /// </summary>
         private void RedrawCanvas()
         {
-            Array.Copy(_activeLayer.GetPixels(), _document.GetPixelsRaw(), _document.Width * _document.Height);
+            // REFACTOR: 1. Composite all layers (via the Compositor) into the Document's final pixel buffer.
+            LayerCompositor.Composite(_document, _layers);
+            
+            // 2. Render the Document's composite buffer to the Avalonia WriteableBitmap.
             _renderer.Render(_document, _canvasBitmap);
         }
     }
