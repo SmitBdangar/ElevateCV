@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Platform;
 
-
 namespace Luminos.Views
 {
     public partial class CanvasView : UserControl
@@ -26,7 +25,7 @@ namespace Luminos.Views
 
         private readonly HistoryManager _historyManager = new();
 
-        // Delta region tracking
+        // Delta region tracking (for undo/redo stroke efficiency)
         private uint[]? _preStrokeDeltaPixels;
         private IntRect _currentDirtyRect = default;
 
@@ -53,7 +52,7 @@ namespace Luminos.Views
                 PixelFormat.Bgra8888,
                 AlphaFormat.Premul);
 
-            this.FindControl<Image>("CanvasImage").Source = _canvasBitmap;
+            this.FindControl<Image>("CanvasImage")!.Source = _canvasBitmap;
 
             PointerPressed += CanvasView_PointerPressed;
             PointerMoved += CanvasView_PointerMoved;
@@ -68,17 +67,11 @@ namespace Luminos.Views
             if (!p.Properties.IsLeftButtonPressed) return;
 
             _isDrawing = true;
-
-            // Reset delta region
             _currentDirtyRect = default;
-
-            // DO THIS BEFORE ANY PAINTING OCCURS
-            // Initial: we do not yet know which pixels changed → so wait until first brush dab expands dirty rect
             _preStrokeDeltaPixels = null;
 
             DrawAtPoint(p.Position.X, p.Position.Y);
 
-            // Now that dirty rect is known → capture pre-state
             if (!_currentDirtyRect.IsEmpty)
             {
                 _preStrokeDeltaPixels = PixelUtils.GetRegionPixels(
@@ -107,7 +100,11 @@ namespace Luminos.Views
             uint[] postPixels = PixelUtils.GetRegionPixels(
                 _activeLayer.GetPixels(), _activeLayer.Width, _currentDirtyRect);
 
-            _historyManager.Do(new StrokeCommand(_activeLayer, _currentDirtyRect, _preStrokeDeltaPixels, postPixels));
+            _historyManager.Do(new StrokeCommand(
+                _activeLayer, 
+                _currentDirtyRect, 
+                _preStrokeDeltaPixels, 
+                postPixels));
 
             _preStrokeDeltaPixels = null;
             _currentDirtyRect = default;
@@ -128,10 +125,7 @@ namespace Luminos.Views
             int r = (int)Math.Ceiling(_brushRadius);
             IntRect brushRect = new(px - r, py - r, r * 2, r * 2);
 
-            // Safely merge dirty rectangles
             _currentDirtyRect = IntRect.Union(_currentDirtyRect, brushRect);
-
-            // Tell the layer to redraw only the affected area
             _activeLayer.MarkDirty(_currentDirtyRect);
 
             RedrawCanvas();
@@ -142,5 +136,9 @@ namespace Luminos.Views
             LayerCompositor.Composite(_document, _layers);
             _renderer.Render(_document, _canvasBitmap);
         }
+
+        // === Undo / Redo Exposed to MainWindow ===
+        public void Undo() => _historyManager.Undo();
+        public void Redo() => _historyManager.Redo();
     }
 }

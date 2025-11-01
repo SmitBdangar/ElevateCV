@@ -7,6 +7,7 @@ using Avalonia.Platform.Storage;
 using Luminos.Views;
 using Luminos.Core;
 
+
 namespace Luminos
 {
     public partial class MainWindow : Window
@@ -16,11 +17,7 @@ namespace Luminos
             InitializeComponent();
         }
 
-        protected override void OnClosing(WindowClosingEventArgs e)
-        {
-            base.OnClosing(e);
-        }
-
+        // Helper to find the CanvasView instance
         private CanvasView? FindCanvasView()
         {
             return this.GetVisualDescendants()
@@ -28,7 +25,23 @@ namespace Luminos
                        .FirstOrDefault();
         }
 
-        public async void OnExportPngClicked(object sender, RoutedEventArgs e)
+        // --- FILE MENU COMMANDS ---
+        public void OnNewClicked(object? sender, RoutedEventArgs e)
+        {
+            // TODO: Implement new document
+        }
+
+        public void OnOpenClicked(object? sender, RoutedEventArgs e)
+        {
+            // TODO: Implement open
+        }
+
+        public void OnSaveClicked(object? sender, RoutedEventArgs e)
+        {
+            // TODO: Implement save
+        }
+
+        public async void OnExportPngClicked(object? sender, RoutedEventArgs e)
         {
             var canvas = FindCanvasView();
             if (canvas == null)
@@ -45,12 +58,21 @@ namespace Luminos
                 FileTypeChoices = new[] { FilePickerFileTypes.ImagePng }
             });
 
-            // ✅ Defensive null-check
             if (file == null || canvas.CanvasBitmap == null)
                 return;
 
             await FileHandler.ExportPng(canvas.CanvasBitmap, file);
         }
 
+        // --- EDIT MENU COMMANDS ---
+        public void OnUndoClicked(object? sender, RoutedEventArgs e)
+        {
+            FindCanvasView()?.Undo();
+        }
+
+        public void OnRedoClicked(object? sender, RoutedEventArgs e)
+        {
+            FindCanvasView()?.Redo();
+        }
     }
 }
