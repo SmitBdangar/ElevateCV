@@ -56,6 +56,10 @@
               "target": "Package",
               "version": "[11.3.8, )"
             },
+            "Avalonia.Diagnostics": {
+              "target": "Package",
+              "version": "[11.3.8, )"
+            },
             "Avalonia.Fonts.Inter": {
               "target": "Package",
               "version": "[11.3.8, )"

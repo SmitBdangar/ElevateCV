@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "q5CneAGoGiE=",
+  "dgSpecHash": "ptDhq64TCwE=",
   "success": true,
   "projectFilePath": "C:\\Users\\Admin\\github\\Luminos\\Luminos.csproj",
   "expectedPackageFiles": [
@@ -9,12 +9,14 @@
     "C:\\Users\\Admin\\.nuget\\packages\\avalonia.buildservices\\11.3.1\\avalonia.buildservices.11.3.1.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\avalonia.controls.colorpicker\\11.3.8\\avalonia.controls.colorpicker.11.3.8.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\avalonia.desktop\\11.3.8\\avalonia.desktop.11.3.8.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\avalonia.diagnostics\\11.3.8\\avalonia.diagnostics.11.3.8.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\avalonia.fonts.inter\\11.3.8\\avalonia.fonts.inter.11.3.8.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\avalonia.freedesktop\\11.3.8\\avalonia.freedesktop.11.3.8.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\avalonia.native\\11.3.8\\avalonia.native.11.3.8.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\avalonia.remote.protocol\\11.3.8\\avalonia.remote.protocol.11.3.8.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\avalonia.skia\\11.3.8\\avalonia.skia.11.3.8.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\avalonia.themes.fluent\\11.3.8\\avalonia.themes.fluent.11.3.8.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\avalonia.themes.simple\\11.3.8\\avalonia.themes.simple.11.3.8.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\avalonia.win32\\11.3.8\\avalonia.win32.11.3.8.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\avalonia.x11\\11.3.8\\avalonia.x11.11.3.8.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\harfbuzzsharp\\8.3.1.1\\harfbuzzsharp.8.3.1.1.nupkg.sha512",

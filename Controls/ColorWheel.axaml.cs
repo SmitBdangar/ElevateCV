@@ -9,6 +9,19 @@ namespace Luminos.Controls
     public partial class ColorWheel : UserControl
     {
         private bool _isDragging;
+        private bool _showPreviewCircle;
+
+        public bool ShowBrushPreview
+        {
+            get => _showPreviewCircle;
+            set
+            {
+                _showPreviewCircle = value;
+                InvalidateVisual();
+            }
+        }
+
+        public double PreviewBrushRadius { get; set; } = 10;
 
         private Color _activeColor = Colors.White;
         public Color ActiveColor
@@ -25,48 +38,63 @@ namespace Luminos.Controls
         public event EventHandler<Color>? ActiveColorChanged;
 
         public ColorWheel()
-{
-    InitializeComponent();
-    InvalidateVisual(); // ✅ Force initial render
-}
+        {
+            InitializeComponent();
+            InvalidateVisual();
+        }
 
         public override void Render(DrawingContext context)
         {
             base.Render(context);
 
-            double size = Math.Min(Bounds.Width, Bounds.Height);
-            double radius = size / 2;
+            double radius = Math.Min(Bounds.Width, Bounds.Height) / 2;
             var center = new Point(Bounds.Width / 2, Bounds.Height / 2);
 
-            // Draw circular hue ring
+            // Draw wheel segments
             for (int angle = 0; angle < 360; angle++)
             {
                 var color = HsvToColor(angle, 1, 1);
-                var pen = new Pen(new SolidColorBrush(color), 6);
+                var brush = new SolidColorBrush(color);
 
-                double rad = Math.PI * angle / 180.0;
-                var p1 = center + new Vector(Math.Cos(rad) * (radius - 8), Math.Sin(rad) * (radius - 8));
-                var p2 = center + new Vector(Math.Cos(rad) * radius, Math.Sin(rad) * radius);
+                double rad1 = radius * 0.20; // inner empty circle
+                double rad2 = radius;        // outer circle radius
+                double rad = angle * Math.PI / 180;
 
-                context.DrawLine(pen, p1, p2);
+                var p1 = center + new Vector(Math.Cos(rad), Math.Sin(rad)) * rad1;
+                var p2 = center + new Vector(Math.Cos(rad), Math.Sin(rad)) * rad2;
+
+                context.DrawLine(new Pen(brush, 10), p1, p2);
+            }
+
+            // Draw current preview circle
+            if (ShowBrushPreview)
+            {
+                var previewBrush = new SolidColorBrush(ActiveColor);
+                context.DrawEllipse(previewBrush, new Pen(Brushes.White, 2),
+                    center, PreviewBrushRadius, PreviewBrushRadius);
             }
         }
 
-        private void ColorWheelSurface_PointerPressed(object? sender, PointerPressedEventArgs e)
+
+
+        protected override void OnPointerPressed(PointerPressedEventArgs e)
         {
             _isDragging = true;
+            ShowBrushPreview = true;
             UpdateColorFromPointer(e.GetPosition(this));
+            e.Handled = true;
         }
 
-        private void ColorWheelSurface_PointerMoved(object? sender, PointerEventArgs e)
+        protected override void OnPointerMoved(PointerEventArgs e)
         {
             if (_isDragging)
                 UpdateColorFromPointer(e.GetPosition(this));
         }
 
-        private void ColorWheelSurface_PointerReleased(object? sender, PointerReleasedEventArgs e)
+        protected override void OnPointerReleased(PointerReleasedEventArgs e)
         {
             _isDragging = false;
+            ShowBrushPreview = false;
         }
 
         private void UpdateColorFromPointer(Point pos)
@@ -82,14 +110,14 @@ namespace Luminos.Controls
 
         public static uint HsvToArgb(float h, float s, float v, float a = 1.0f)
         {
-            h = h % 360.0f;
-            if (h < 0) h += 360.0f;
+            h = h % 360f;
+            if (h < 0) h += 360f;
             s = Math.Clamp(s, 0f, 1f);
             v = Math.Clamp(v, 0f, 1f);
             a = Math.Clamp(a, 0f, 1f);
 
             float c = v * s;
-            float x = c * (1 - Math.Abs((h / 60.0f) % 2 - 1));
+            float x = c * (1 - Math.Abs((h / 60f) % 2 - 1));
             float m = v - c;
 
             float r, g, b;
@@ -101,58 +129,22 @@ namespace Luminos.Controls
             else if (h < 300) { r = x; g = 0; b = c; }
             else { r = c; g = 0; b = x; }
 
-            uint A = (uint)(a * 255);
-            uint R = (uint)((r + m) * 255);
-            uint G = (uint)((g + m) * 255);
-            uint B = (uint)((b + m) * 255);
-
-            return (A << 24) | (R << 16) | (G << 8) | B;
-        }
-
-        public static (float h, float s, float v, float a) ArgbToHsv(uint argb)
-        {
-            float alpha = ((argb >> 24) & 0xFF) / 255f;
-            float r = ((argb >> 16) & 0xFF) / 255f;
-            float g = ((argb >> 8) & 0xFF) / 255f;
-            float b = (argb & 0xFF) / 255f;
-
-            float max = Math.Max(r, Math.Max(g, b));
-            float min = Math.Min(r, Math.Min(g, b));
-            float delta = max - min;
-
-            float h = 0;
-            float s = max == 0 ? 0 : delta / max;
-            float v = max;
-
-            if (delta != 0)
-            {
-                if (max == r) h = 60 * (((g - b) / delta) % 6);
-                else if (max == g) h = 60 * (((b - r) / delta) + 2);
-                else h = 60 * (((r - g) / delta) + 4);
-
-                if (h < 0) h += 360;
-            }
-
-            return (h, s, v, alpha);
-        }
-
-        public static Color ArgbToColor(uint argb)
-        {
-            byte a = (byte)((argb >> 24) & 0xFF);
-            byte r = (byte)((argb >> 16) & 0xFF);
-            byte g = (byte)((argb >> 8) & 0xFF);
-            byte b = (byte)(argb & 0xFF);
-            return Color.FromArgb(a, r, g, b);
-        }
-
-        public static uint ColorToArgb(Color color)
-        {
-            return (uint)((color.A << 24) | (color.R << 16) | (color.G << 8) | color.B);
+            return ((uint)(a * 255) << 24)
+                 | (uint)((r + m) * 255) << 16
+                 | (uint)((g + m) * 255) << 8
+                 | (uint)((b + m) * 255);
         }
 
         public static Color HsvToColor(float h, float s, float v, float a = 1.0f)
+            => ArgbToColor(HsvToArgb(h, s, v, a));
+
+        public static Color ArgbToColor(uint argb)
         {
-            return ArgbToColor(HsvToArgb(h, s, v, a));
+            return Color.FromArgb(
+                (byte)((argb >> 24) & 0xFF),
+                (byte)((argb >> 16) & 0xFF),
+                (byte)((argb >> 8) & 0xFF),
+                (byte)(argb & 0xFF));
         }
     }
 }

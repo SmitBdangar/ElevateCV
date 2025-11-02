@@ -27,6 +27,10 @@ namespace Luminos.Views
         private readonly Stack<uint[]> _redoStack = new Stack<uint[]>();
         private const int MAX_HISTORY = 30;
 
+        public bool ShowBrushPreview { get; set; }
+        public float PreviewBrushRadius { get; set; }
+
+
         private uint _activeColor = 0xFFFF0000;
         private float _brushRadius = 15f;
         private float _brushOpacity = 1f;
@@ -82,7 +86,7 @@ namespace Luminos.Views
             double bitmapX = pos.X - offsetX;
             double bitmapY = pos.Y - offsetY;
 
-            if (bitmapX < 0 || bitmapY < 0 || 
+            if (bitmapX < 0 || bitmapY < 0 ||
                 bitmapX >= bitmapWidth || bitmapY >= bitmapHeight)
             {
                 return null;
@@ -153,7 +157,7 @@ namespace Luminos.Views
                 var temp = _canvasImage.Source;
                 _canvasImage.Source = null;
                 _canvasImage.Source = temp;
-                
+
                 _canvasImage.InvalidateVisual();
                 this.InvalidateVisual();
             }

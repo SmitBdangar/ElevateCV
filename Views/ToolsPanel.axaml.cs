@@ -1,10 +1,8 @@
-using Avalonia.Controls;
-using Avalonia.VisualTree;
 using System.Linq;
-using Luminos.Controls;
-using Luminos.Core; // For ToColorArray
-using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.VisualTree;
+using Luminos.Controls;
 
 namespace Luminos.Views
 {
@@ -16,40 +14,38 @@ namespace Luminos.Views
         {
             InitializeComponent();
 
-            BrushSizeSlider.ValueChanged += (_, _) =>
+            // Find canvas after UI finishes loading
+            this.Loaded += (_, __) =>
             {
-                if (_canvas != null)
-                    _canvas.BrushRadius = (float)BrushSizeSlider.Value;
+                var window = this.GetVisualRoot() as Window;
+                if (window != null)
+                {
+                    _canvas = window.GetVisualDescendants()
+                                    .OfType<CanvasView>()
+                                    .FirstOrDefault();
+                }
             };
 
-            OpacitySlider.ValueChanged += (_, _) =>
-            {
-                if (_canvas != null)
-                    _canvas.BrushOpacity = (float)OpacitySlider.Value;
-            };
+            BrushSizeSlider.ValueChanged += (_, __) => UpdateBrushSettings();
+            OpacitySlider.ValueChanged += (_, __) => UpdateBrushSettings();
 
-            HexGrid.ColorSelected += c =>
+            ColorPicker.ActiveColorChanged += (_, color) =>
             {
+                ColorPreview.Background = new SolidColorBrush(color);
+
                 if (_canvas != null)
-                    _canvas.ActiveColor = (uint)((c.A << 24) | (c.R << 16) | (c.G << 8) | c.B);
-                ColorPreview.Background = new SolidColorBrush(c);
+                {
+                    _canvas.ActiveColor = (uint)((color.A << 24) | (color.R << 16) | (color.G << 8) | color.B);
+                }
             };
         }
 
-        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        private void UpdateBrushSettings()
         {
-            base.OnAttachedToVisualTree(e);
+            if (_canvas == null) return;
 
-            _canvas = this.FindAncestorOfType<Window>()?
-                .GetVisualDescendants().OfType<CanvasView>().FirstOrDefault();
-
-            HexGrid.Palette = new[]
-            {
-                new[] { "#FFFFFFFF","#FFEEEEEE","#FFCCCCCC","#FF999999","#FF666666","#FF333333","#FF000000" }.ToColorArray(),
-                new[] { "#FFFFE5E5","#FFFFB3B3","#FFFF8080","#FFFF4D4D","#FFFF1A1A","#FFE60000","#FF990000" }.ToColorArray(),
-                new[] { "#FFFFF2E0","#FFFFD8B0","#FFFFBB80","#FFFF9F50","#FFFF8220","#FFE66000","#FF993D00" }.ToColorArray(),
-                new[] { "#FFFFFFE0","#FFFFFFB3","#FFFFFF80","#FFFFFF4D","#FFFFFF1A","#FFE6E600","#FF999900" }.ToColorArray(),
-            };
+            _canvas.BrushRadius = (float)BrushSizeSlider.Value;
+            _canvas.BrushOpacity = (float)OpacitySlider.Value;
         }
     }
 }

@@ -5,28 +5,26 @@
     xmlns:controls="clr-namespace:Luminos.Controls">
 
     <Border Padding="10">
-        <StackPanel Spacing="12">
+<StackPanel Margin="10" Spacing="10">
 
-            <TextBlock Text="Color" FontWeight="Bold"/>
+    <TextBlock Text="Color" Foreground="White" />
 
-            <!-- Color Preview -->
-            <Border x:Name="ColorPreview"
-                    Width="42" Height="42"
-                    CornerRadius="21"
-                    BorderBrush="White"
-                    BorderThickness="2"
-                    Background="White"
-                    HorizontalAlignment="Left"/>
+    <!-- ADD THIS -->
+    <controls:ColorWheel x:Name="ColorPicker" Width="140" Height="140"/>
 
-            <controls:HexColorGrid x:Name="HexGrid" Height="190"/>
+    <Border x:Name="ColorPreview"
+            Width="40" Height="40"
+            CornerRadius="20"
+            Background="White"
+            HorizontalAlignment="Left"/>
 
-            <TextBlock Text="Brush Size"/>
-            <Slider x:Name="BrushSizeSlider" Minimum="1" Maximum="100" Value="15"/>
+    <TextBlock Text="Brush Size" Foreground="White" Margin="0,20,0,0"/>
+    <Slider x:Name="BrushSizeSlider" Minimum="1" Maximum="100"/>
 
-            <TextBlock Text="Opacity"/>
-            <Slider x:Name="OpacitySlider" Minimum="0" Maximum="1" Value="1"/>
+    <TextBlock Text="Opacity" Foreground="White" Margin="0,20,0,0"/>
+    <Slider x:Name="OpacitySlider" Minimum="0" Maximum="1"/>
 
-        </StackPanel>
+</StackPanel>
     </Border>
 
 </UserControl>

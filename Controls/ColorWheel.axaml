@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+<!-- <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Luminos.Controls.ColorWheel"
              MinHeight="200" MinWidth="200">
@@ -12,4 +12,12 @@
             PointerMoved="ColorWheelSurface_PointerMoved"
             PointerReleased="ColorWheelSurface_PointerReleased" />
 
+</UserControl> -->
+
+<UserControl
+    x:Class="Luminos.Controls.ColorWheel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Border Background="Transparent"/>
 </UserControl>
