@@ -22,10 +22,10 @@ namespace Luminos.Views
 
             if (sizeSlider != null)
                 sizeSlider.ValueChanged += BrushSetting_ValueChanged;
-            
+
             if (opacitySlider != null)
                 opacitySlider.ValueChanged += BrushSetting_ValueChanged;
-            
+
             if (colorWheel != null)
                 colorWheel.ActiveColorChanged += ColorWheel_ColorChanged;
         }
@@ -46,6 +46,13 @@ namespace Luminos.Views
 
         private void BrushSetting_ValueChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
+            if (_canvas == null)
+            {
+                // Retry finding canvas
+                var window = this.FindAncestorOfType<Window>();
+                _canvas = window?.GetVisualDescendants().OfType<CanvasView>().FirstOrDefault();
+            }
+
             if (_canvas == null) return;
 
             if (sender is Slider slider)

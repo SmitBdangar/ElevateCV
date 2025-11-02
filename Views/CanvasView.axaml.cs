@@ -21,11 +21,11 @@ namespace Luminos.Views
         private readonly BrushEngine _brushEngine = new();
         private readonly Renderer _renderer = new();
         private WriteableBitmap _canvasBitmap;
+        private Image? _canvasImage;
         private bool _isDrawing = false;
 
         private readonly HistoryManager _historyManager = new();
 
-        // Delta region tracking (for undo/redo stroke efficiency)
         private uint[]? _preStrokeDeltaPixels;
         private IntRect _currentDirtyRect = default;
 
@@ -52,7 +52,11 @@ namespace Luminos.Views
                 PixelFormat.Bgra8888,
                 AlphaFormat.Premul);
 
-            this.FindControl<Image>("CanvasImage")!.Source = _canvasBitmap;
+            _canvasImage = this.FindControl<Image>("CanvasImage");
+            if (_canvasImage != null)
+            {
+                _canvasImage.Source = _canvasBitmap;
+            }
 
             PointerPressed += CanvasView_PointerPressed;
             PointerMoved += CanvasView_PointerMoved;
@@ -61,19 +65,61 @@ namespace Luminos.Views
             RedrawCanvas();
         }
 
+        /// <summary>
+        /// ✅ Converts screen pointer position to bitmap pixel coordinates
+        /// </summary>
+        private Point? GetBitmapCoordinates(PointerEventArgs e)
+        {
+            if (_canvasImage?.Bounds == null || _canvasBitmap == null)
+                return null;
+
+            // Get position relative to Image control
+            var pos = e.GetPosition(_canvasImage);
+
+            // Get the Image control's actual rendered size
+            var imageBounds = _canvasImage.Bounds;
+            var imageWidth = imageBounds.Width;
+            var imageHeight = imageBounds.Height;
+
+            // Get bitmap dimensions
+            var bitmapWidth = _canvasBitmap.PixelSize.Width;
+            var bitmapHeight = _canvasBitmap.PixelSize.Height;
+
+            // Since Stretch="None", the bitmap is rendered at its native size
+            // and centered within the Image control.
+            // Calculate the offset of the bitmap within the Image bounds:
+            double offsetX = (imageWidth - bitmapWidth) / 2.0;
+            double offsetY = (imageHeight - bitmapHeight) / 2.0;
+
+            // Transform to bitmap coordinates
+            double bitmapX = pos.X - offsetX;
+            double bitmapY = pos.Y - offsetY;
+
+            // Validate bounds
+            if (bitmapX < 0 || bitmapY < 0 || 
+                bitmapX >= bitmapWidth || bitmapY >= bitmapHeight)
+            {
+                return null; // Outside bitmap area
+            }
+
+            return new Point(bitmapX, bitmapY);
+        }
+
         private void CanvasView_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            var image = this.FindControl<Image>("CanvasImage");
-            if (image == null) return;
+            if (_canvasImage == null) return;
 
-            var p = e.GetCurrentPoint(image); // Get position relative to Image
+            var p = e.GetCurrentPoint(_canvasImage);
             if (!p.Properties.IsLeftButtonPressed) return;
+
+            var coords = GetBitmapCoordinates(e);
+            if (coords == null) return; // Click outside bitmap
 
             _isDrawing = true;
             _currentDirtyRect = default;
             _preStrokeDeltaPixels = null;
 
-            DrawAtPoint(p.Position.X, p.Position.Y);
+            DrawAtPoint(coords.Value.X, coords.Value.Y);
 
             if (!_currentDirtyRect.IsEmpty)
             {
@@ -86,13 +132,12 @@ namespace Luminos.Views
 
         private void CanvasView_PointerMoved(object? sender, PointerEventArgs e)
         {
-            if (!_isDrawing) return;
+            if (!_isDrawing || _canvasImage == null) return;
 
-            var image = this.FindControl<Image>("CanvasImage");
-            if (image == null) return;
+            var coords = GetBitmapCoordinates(e);
+            if (coords == null) return;
 
-            var p = e.GetCurrentPoint(image); // Get position relative to Image
-            DrawAtPoint(p.Position.X, p.Position.Y);
+            DrawAtPoint(coords.Value.X, coords.Value.Y);
             e.Handled = true;
         }
 
@@ -100,7 +145,6 @@ namespace Luminos.Views
         {
             if (!_isDrawing) return;
 
-            // Finalize stroke first
             if (!_currentDirtyRect.IsEmpty && _preStrokeDeltaPixels != null)
             {
                 uint[] postPixels = PixelUtils.GetRegionPixels(
@@ -116,7 +160,6 @@ namespace Luminos.Views
                 _currentDirtyRect = default;
             }
 
-            // Reset drawing state LAST
             _isDrawing = false;
             e.Handled = true;
         }
@@ -126,15 +169,13 @@ namespace Luminos.Views
             int px = (int)Math.Clamp(x, 0, _document.Width - 1);
             int py = (int)Math.Clamp(y, 0, _document.Height - 1);
 
-            uint baseAlpha = (_activeColor >> 24) & 0xFF;
-            uint newAlpha = (uint)(baseAlpha * _brushOpacity);
+            uint newAlpha = (uint)(255 * _brushOpacity);
             uint dynamicColor = (newAlpha << 24) | (_activeColor & 0x00FFFFFF);
 
             _brushEngine.ApplyBrush(_activeLayer, px, py, dynamicColor, _brushRadius);
 
             int r = (int)Math.Ceiling(_brushRadius);
 
-            // Clamp dirty rect to canvas bounds
             int rectX = Math.Max(0, px - r);
             int rectY = Math.Max(0, py - r);
             int rectW = Math.Min(_document.Width - rectX, r * 2);
@@ -153,24 +194,33 @@ namespace Luminos.Views
             LayerCompositor.Composite(_document, _layers);
             _renderer.Render(_document, _canvasBitmap);
 
-            // Clear dirty regions after compositing
             foreach (var layer in _layers)
             {
                 layer.ClearDirty();
             }
+
+            if (_canvasImage != null)
+            {
+                // Force UI refresh by detaching/reattaching
+                var temp = _canvasImage.Source;
+                _canvasImage.Source = null;
+                _canvasImage.Source = temp;
+                
+                _canvasImage.InvalidateVisual();
+                this.InvalidateVisual();
+            }
         }
 
-        // === Undo / Redo Exposed to MainWindow ===
         public void Undo()
         {
             _historyManager.Undo();
-            RedrawCanvas(); // Add this
+            RedrawCanvas();
         }
 
         public void Redo()
         {
             _historyManager.Redo();
-            RedrawCanvas(); // Add this
+            RedrawCanvas();
         }
     }
 }

@@ -15,9 +15,11 @@ namespace Luminos.Rendering
             uint[] layerPixels = layer.GetPixels();
 
             int minX = Math.Max(0, (int)(centerX - radius));
-            int maxX = Math.Min(layer.Width, (int)(centerX + radius + 1)); // Add +1 for inclusive
             int minY = Math.Max(0, (int)(centerY - radius));
-            int maxY = Math.Min(layer.Height, (int)(centerY + radius + 1)); // Add +1 for inclusive
+
+            int maxX = Math.Min(layer.Width, (int)(centerX + radius) + 1); // ✅ Clearer intent
+            int maxY = Math.Min(layer.Height, (int)(centerY + radius) + 1);
+
 
             float radiusSq = radius * radius;
 

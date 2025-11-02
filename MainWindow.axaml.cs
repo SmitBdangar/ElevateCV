@@ -61,10 +61,12 @@ namespace Luminos
                 FileTypeChoices = new[] { FilePickerFileTypes.ImagePng }
             });
 
-            if (file == null)
-                return;
+            if (file != null)
+            {
+                await FileHandler.ExportPng(canvas.CanvasBitmap, file);
+                UpdateStatus("✅ Exported to " + file.Name); // ✅
+            }
 
-            await FileHandler.ExportPng(canvas.CanvasBitmap, file);
         }
 
         // --- EDIT MENU COMMANDS ---

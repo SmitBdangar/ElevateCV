@@ -25,9 +25,10 @@ namespace Luminos.Controls
         public event EventHandler<Color>? ActiveColorChanged;
 
         public ColorWheel()
-        {
-            InitializeComponent();
-        }
+{
+    InitializeComponent();
+    InvalidateVisual(); // ✅ Force initial render
+}
 
         public override void Render(DrawingContext context)
         {
