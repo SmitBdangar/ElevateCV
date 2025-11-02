@@ -1,9 +1,9 @@
-using System;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.VisualTree;
+using Avalonia.Controls.Primitives;
+using Luminos.Controls;
 using System.Linq;
 
 namespace Luminos.Views
@@ -16,64 +16,50 @@ namespace Luminos.Views
         {
             InitializeComponent();
 
-            var sizeSlider = this.FindControl<Slider>("BrushSizeSlider");
-            var opacitySlider = this.FindControl<Slider>("OpacitySlider");
-            var colorWheel = this.FindControl<Controls.ColorWheel>("ColorWheelControl");
+            BrushSizeSlider.ValueChanged += BrushChanged;
+            OpacitySlider.ValueChanged += BrushChanged;
 
-            if (sizeSlider != null)
-                sizeSlider.ValueChanged += BrushSetting_ValueChanged;
-
-            if (opacitySlider != null)
-                opacitySlider.ValueChanged += BrushSetting_ValueChanged;
-
-            if (colorWheel != null)
-                colorWheel.ActiveColorChanged += ColorWheel_ColorChanged;
+            ColorGrid.ColorSelected += OnColorPicked;
+            ColorPad.ColorChanged += OnColorPicked;
         }
 
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnAttachedToVisualTree(e);
 
-            // Find CanvasView by traversing up to Window then searching descendants
             var window = this.FindAncestorOfType<Window>();
-            if (window != null)
-            {
-                _canvas = window.GetVisualDescendants()
-                                .OfType<CanvasView>()
-                                .FirstOrDefault();
-            }
+            if (window == null) return;
+
+            _canvas = window.GetVisualDescendants()
+                            .OfType<CanvasView>()
+                            .FirstOrDefault();
         }
 
-        private void BrushSetting_ValueChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        private void OnColorPicked(Color color)
         {
             if (_canvas == null)
             {
-                // Retry finding canvas
                 var window = this.FindAncestorOfType<Window>();
                 _canvas = window?.GetVisualDescendants().OfType<CanvasView>().FirstOrDefault();
+                if (_canvas == null) return;
             }
 
-            if (_canvas == null) return;
+            _canvas.ActiveColor = (uint)((color.A << 24) | (color.R << 16) | (color.G << 8) | color.B);
 
-            if (sender is Slider slider)
-            {
-                switch (slider.Name)
-                {
-                    case "BrushSizeSlider":
-                        _canvas.BrushRadius = (float)slider.Value;
-                        break;
-
-                    case "OpacitySlider":
-                        _canvas.BrushOpacity = (float)slider.Value;
-                        break;
-                }
-            }
+            CurrentColorPreview.Background = new SolidColorBrush(color);
         }
 
-        private void ColorWheel_ColorChanged(object? sender, Color color)
+        private void BrushChanged(object? sender, RangeBaseValueChangedEventArgs e)
         {
-            if (_canvas == null) return;
-            _canvas.ActiveColor = (uint)((color.A << 24) | (color.R << 16) | (color.G << 8) | color.B);
+            if (_canvas == null)
+            {
+                var window = this.FindAncestorOfType<Window>();
+                _canvas = window?.GetVisualDescendants().OfType<CanvasView>().FirstOrDefault();
+                if (_canvas == null) return;
+            }
+
+            _canvas.BrushRadius = (float)BrushSizeSlider.Value;
+            _canvas.BrushOpacity = (float)OpacitySlider.Value;
         }
     }
 }
