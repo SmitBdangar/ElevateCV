@@ -1,0 +1,11 @@
+<UserControl
+    x:Class="Luminos.Controls.HexColorGrid"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+        <UniformGrid x:Name="GridRoot" Columns="7" Margin="4"/>
+    </ScrollViewer>
+
+</UserControl>

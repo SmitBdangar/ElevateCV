@@ -1,44 +1,23 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:controls="clr-namespace:Luminos.Controls"
-             x:Class="Luminos.Views.ToolsPanel"
-             Padding="10">
+<UserControl
+    x:Class="Luminos.Views.ToolsPanel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Luminos.Controls">
 
-    <StackPanel Orientation="Vertical" Spacing="10">
+    <Border Padding="10">
+        <StackPanel Spacing="12">
 
-        <!-- Current Color Preview -->
-        <Border x:Name="CurrentColorPreview"
-                Width="200" Height="40"
-                CornerRadius="6"
-                Background="White"
-                BorderBrush="#666"
-                BorderThickness="1"/>
+            <TextBlock Text="Color" FontWeight="Bold"/>
 
-        <!-- Fine Color Selection Pad -->
-        <controls:ColorSVPad x:Name="ColorPad"
-                             Width="200"
-                             Height="160"
-                             Margin="0,5"/>
+            <controls:HexColorGrid x:Name="HexGrid" Height="190"/>
 
-        <!-- Hex Swatch Color Grid -->
-        <Border Width="200" Height="130" Background="#222" CornerRadius="6" Padding="5">
-            <controls:HexColorGrid x:Name="ColorGrid"
-                                   Rows="6"
-                                   Columns="6"
-                                   CellSize="20"/>
-        </Border>
+            <TextBlock Text="Brush Size"/>
+            <Slider x:Name="BrushSizeSlider" Minimum="1" Maximum="100" Value="15"/>
 
-        <Separator/>
+            <TextBlock Text="Opacity"/>
+            <Slider x:Name="OpacitySlider" Minimum="0" Maximum="1" Value="1"/>
 
-        <TextBlock Text="Brush Size" Foreground="White"/>
-        <Slider x:Name="BrushSizeSlider"
-                Minimum="1" Maximum="100" Value="15"
-                Width="200"/>
+        </StackPanel>
+    </Border>
 
-        <TextBlock Text="Opacity" Foreground="White"/>
-        <Slider x:Name="OpacitySlider"
-                Minimum="0.0" Maximum="1.0" Value="1.0"
-                Width="200"/>
-
-    </StackPanel>
 </UserControl>
