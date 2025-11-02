@@ -4,47 +4,108 @@ using System.Collections.Generic;
 namespace Luminos.Core.Core
 {
     /// <summary>
-    /// Manages the command stack for undo/redo functionality using commands/mementos. [cite: 30, 116]
+    /// Manages the command stack for undo/redo functionality using commands/mementos.
     /// </summary>
     public class HistoryManager
     {
         private readonly Stack<ICommand> _undoStack = new Stack<ICommand>();
         private readonly Stack<ICommand> _redoStack = new Stack<ICommand>();
+        private const int MAX_HISTORY = 50; // ✅ Prevent memory leaks
 
         /// <summary>
-        /// Executes a command and adds it to the undo stack. [cite: 116]
+        /// Executes a command and adds it to the undo stack.
         /// </summary>
         public void Do(ICommand command)
         {
-            command.Execute();
-            _undoStack.Push(command);
-            _redoStack.Clear(); 
+            if (command == null)
+                return;
+
+            try
+            {
+                command.Execute();
+                _undoStack.Push(command);
+                _redoStack.Clear();
+
+                // ✅ Limit history size to prevent memory issues
+                if (_undoStack.Count > MAX_HISTORY)
+                {
+                    var items = _undoStack.ToArray();
+                    _undoStack.Clear();
+                    for (int i = 0; i < MAX_HISTORY; i++)
+                        _undoStack.Push(items[i]);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Command execution failed: {ex.Message}");
+            }
         }
 
         /// <summary>
-        /// Undoes the last executed command. [cite: 116]
+        /// Undoes the last executed command.
         /// </summary>
         public void Undo()
         {
-            if (_undoStack.Count > 0)
+            if (_undoStack.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("⚠️ Nothing to undo");
+                return;
+            }
+
+            try
             {
                 var command = _undoStack.Pop();
                 command.Undo();
                 _redoStack.Push(command);
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Undo failed: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"   Stack trace: {ex.StackTrace}");
+            }
         }
 
         /// <summary>
-        /// Re-executes the last undone command. [cite: 116]
+        /// Re-executes the last undone command.
         /// </summary>
         public void Redo()
         {
-            if (_redoStack.Count > 0)
+            if (_redoStack.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("⚠️ Nothing to redo");
+                return;
+            }
+
+            try
             {
                 var command = _redoStack.Pop();
                 command.Redo();
                 _undoStack.Push(command);
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Redo failed: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"   Stack trace: {ex.StackTrace}");
+            }
+        }
+
+        /// <summary>
+        /// ✅ Check if undo is available
+        /// </summary>
+        public bool CanUndo => _undoStack.Count > 0;
+
+        /// <summary>
+        /// ✅ Check if redo is available
+        /// </summary>
+        public bool CanRedo => _redoStack.Count > 0;
+
+        /// <summary>
+        /// ✅ Clear all history
+        /// </summary>
+        public void Clear()
+        {
+            _undoStack.Clear();
+            _redoStack.Clear();
         }
     }
 }

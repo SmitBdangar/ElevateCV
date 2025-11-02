@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Luminos")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6e3c1a6167d4efe17d2e12de3262b55269919be3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+53529a869dcc502ed33687934bc832a64c07175e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Luminos")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Luminos")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

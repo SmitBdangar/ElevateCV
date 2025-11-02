@@ -1,13 +1,11 @@
 using System;
+using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Input;
 using Avalonia;
 using Luminos.Core;
-using Luminos.Core.Core;
 using Luminos.Rendering;
-using System.Collections.Generic;
-using System.Linq;
 using Avalonia.Platform;
 
 namespace Luminos.Views
@@ -16,7 +14,7 @@ namespace Luminos.Views
     {
         private Document _document;
         private readonly List<Layer> _layers = new();
-        private Layer _activeLayer => _layers.First();
+        private Layer _activeLayer => _layers[0];
 
         private readonly BrushEngine _brushEngine = new();
         private readonly Renderer _renderer = new();
@@ -24,10 +22,10 @@ namespace Luminos.Views
         private Image? _canvasImage;
         private bool _isDrawing = false;
 
-        private readonly HistoryManager _historyManager = new();
-
-        private uint[]? _preStrokeDeltaPixels;
-        private IntRect _currentDirtyRect = default;
+        // ✅ NEW SIMPLE UNDO/REDO SYSTEM
+        private readonly Stack<uint[]> _undoStack = new Stack<uint[]>();
+        private readonly Stack<uint[]> _redoStack = new Stack<uint[]>();
+        private const int MAX_HISTORY = 30;
 
         private uint _activeColor = 0xFFFF0000;
         private float _brushRadius = 15f;
@@ -66,40 +64,28 @@ namespace Luminos.Views
         }
 
         /// <summary>
-        /// ✅ Converts screen pointer position to bitmap pixel coordinates
+        /// Converts screen pointer position to bitmap pixel coordinates
         /// </summary>
         private Point? GetBitmapCoordinates(PointerEventArgs e)
         {
             if (_canvasImage?.Bounds == null || _canvasBitmap == null)
                 return null;
 
-            // Get position relative to Image control
             var pos = e.GetPosition(_canvasImage);
-
-            // Get the Image control's actual rendered size
             var imageBounds = _canvasImage.Bounds;
-            var imageWidth = imageBounds.Width;
-            var imageHeight = imageBounds.Height;
-
-            // Get bitmap dimensions
             var bitmapWidth = _canvasBitmap.PixelSize.Width;
             var bitmapHeight = _canvasBitmap.PixelSize.Height;
 
-            // Since Stretch="None", the bitmap is rendered at its native size
-            // and centered within the Image control.
-            // Calculate the offset of the bitmap within the Image bounds:
-            double offsetX = (imageWidth - bitmapWidth) / 2.0;
-            double offsetY = (imageHeight - bitmapHeight) / 2.0;
+            double offsetX = (imageBounds.Width - bitmapWidth) / 2.0;
+            double offsetY = (imageBounds.Height - bitmapHeight) / 2.0;
 
-            // Transform to bitmap coordinates
             double bitmapX = pos.X - offsetX;
             double bitmapY = pos.Y - offsetY;
 
-            // Validate bounds
             if (bitmapX < 0 || bitmapY < 0 || 
                 bitmapX >= bitmapWidth || bitmapY >= bitmapHeight)
             {
-                return null; // Outside bitmap area
+                return null;
             }
 
             return new Point(bitmapX, bitmapY);
@@ -113,19 +99,14 @@ namespace Luminos.Views
             if (!p.Properties.IsLeftButtonPressed) return;
 
             var coords = GetBitmapCoordinates(e);
-            if (coords == null) return; // Click outside bitmap
+            if (coords == null) return;
 
             _isDrawing = true;
-            _currentDirtyRect = default;
-            _preStrokeDeltaPixels = null;
+
+            // ✅ SAVE STATE BEFORE DRAWING (full layer snapshot)
+            SaveStateForUndo();
 
             DrawAtPoint(coords.Value.X, coords.Value.Y);
-
-            if (!_currentDirtyRect.IsEmpty)
-            {
-                _preStrokeDeltaPixels = PixelUtils.GetRegionPixels(
-                    _activeLayer.GetPixels(), _activeLayer.Width, _currentDirtyRect);
-            }
 
             e.Handled = true;
         }
@@ -145,21 +126,6 @@ namespace Luminos.Views
         {
             if (!_isDrawing) return;
 
-            if (!_currentDirtyRect.IsEmpty && _preStrokeDeltaPixels != null)
-            {
-                uint[] postPixels = PixelUtils.GetRegionPixels(
-                    _activeLayer.GetPixels(), _activeLayer.Width, _currentDirtyRect);
-
-                _historyManager.Do(new StrokeCommand(
-                    _activeLayer,
-                    _currentDirtyRect,
-                    _preStrokeDeltaPixels,
-                    postPixels));
-
-                _preStrokeDeltaPixels = null;
-                _currentDirtyRect = default;
-            }
-
             _isDrawing = false;
             e.Handled = true;
         }
@@ -174,18 +140,6 @@ namespace Luminos.Views
 
             _brushEngine.ApplyBrush(_activeLayer, px, py, dynamicColor, _brushRadius);
 
-            int r = (int)Math.Ceiling(_brushRadius);
-
-            int rectX = Math.Max(0, px - r);
-            int rectY = Math.Max(0, py - r);
-            int rectW = Math.Min(_document.Width - rectX, r * 2);
-            int rectH = Math.Min(_document.Height - rectY, r * 2);
-
-            IntRect brushRect = new(rectX, rectY, rectW, rectH);
-
-            _currentDirtyRect = IntRect.Union(_currentDirtyRect, brushRect);
-            _activeLayer.MarkDirty(_currentDirtyRect);
-
             RedrawCanvas();
         }
 
@@ -194,14 +148,8 @@ namespace Luminos.Views
             LayerCompositor.Composite(_document, _layers);
             _renderer.Render(_document, _canvasBitmap);
 
-            foreach (var layer in _layers)
-            {
-                layer.ClearDirty();
-            }
-
             if (_canvasImage != null)
             {
-                // Force UI refresh by detaching/reattaching
                 var temp = _canvasImage.Source;
                 _canvasImage.Source = null;
                 _canvasImage.Source = temp;
@@ -211,16 +159,105 @@ namespace Luminos.Views
             }
         }
 
-        public void Undo()
+        // ✅ NEW UNDO/REDO IMPLEMENTATION
+
+        /// <summary>
+        /// Save current layer state to undo stack
+        /// </summary>
+        private void SaveStateForUndo()
         {
-            _historyManager.Undo();
-            RedrawCanvas();
+            try
+            {
+                // Clone the current layer pixels
+                uint[] snapshot = new uint[_activeLayer.Width * _activeLayer.Height];
+                Array.Copy(_activeLayer.GetPixels(), snapshot, snapshot.Length);
+
+                _undoStack.Push(snapshot);
+
+                // Clear redo stack (new action invalidates redo history)
+                _redoStack.Clear();
+
+                // Limit history size
+                if (_undoStack.Count > MAX_HISTORY)
+                {
+                    var tempList = new List<uint[]>(_undoStack);
+                    _undoStack.Clear();
+                    for (int i = 0; i < MAX_HISTORY; i++)
+                    {
+                        _undoStack.Push(tempList[i]);
+                    }
+                }
+
+                System.Diagnostics.Debug.WriteLine($"✅ Saved undo state. Stack size: {_undoStack.Count}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Failed to save undo state: {ex.Message}");
+            }
         }
 
+        /// <summary>
+        /// Undo last action
+        /// </summary>
+        public void Undo()
+        {
+            if (_undoStack.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("⚠️ Nothing to undo");
+                return;
+            }
+
+            try
+            {
+                // Save current state to redo stack
+                uint[] currentState = new uint[_activeLayer.Width * _activeLayer.Height];
+                Array.Copy(_activeLayer.GetPixels(), currentState, currentState.Length);
+                _redoStack.Push(currentState);
+
+                // Restore previous state
+                uint[] previousState = _undoStack.Pop();
+                Array.Copy(previousState, _activeLayer.GetPixels(), previousState.Length);
+
+                RedrawCanvas();
+
+                System.Diagnostics.Debug.WriteLine($"✅ Undo successful. Undo stack: {_undoStack.Count}, Redo stack: {_redoStack.Count}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Undo failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Redo last undone action
+        /// </summary>
         public void Redo()
         {
-            _historyManager.Redo();
-            RedrawCanvas();
+            if (_redoStack.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("⚠️ Nothing to redo");
+                return;
+            }
+
+            try
+            {
+                // Save current state to undo stack
+                uint[] currentState = new uint[_activeLayer.Width * _activeLayer.Height];
+                Array.Copy(_activeLayer.GetPixels(), currentState, currentState.Length);
+                _undoStack.Push(currentState);
+
+                // Restore redo state
+                uint[] redoState = _redoStack.Pop();
+                Array.Copy(redoState, _activeLayer.GetPixels(), redoState.Length);
+
+                RedrawCanvas();
+
+                System.Diagnostics.Debug.WriteLine($"✅ Redo successful. Undo stack: {_undoStack.Count}, Redo stack: {_redoStack.Count}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Redo failed: {ex.Message}");
+            }
         }
     }
 }
