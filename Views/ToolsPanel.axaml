@@ -9,6 +9,15 @@
 
             <TextBlock Text="Color" FontWeight="Bold"/>
 
+            <!-- Color Preview -->
+            <Border x:Name="ColorPreview"
+                    Width="42" Height="42"
+                    CornerRadius="21"
+                    BorderBrush="White"
+                    BorderThickness="2"
+                    Background="White"
+                    HorizontalAlignment="Left"/>
+
             <controls:HexColorGrid x:Name="HexGrid" Height="190"/>
 
             <TextBlock Text="Brush Size"/>

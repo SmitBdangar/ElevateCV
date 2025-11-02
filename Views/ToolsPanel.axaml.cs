@@ -4,6 +4,7 @@ using System.Linq;
 using Luminos.Controls;
 using Luminos.Core; // For ToColorArray
 using Avalonia;
+using Avalonia.Media;
 
 namespace Luminos.Views
 {
@@ -31,6 +32,7 @@ namespace Luminos.Views
             {
                 if (_canvas != null)
                     _canvas.ActiveColor = (uint)((c.A << 24) | (c.R << 16) | (c.G << 8) | c.B);
+                ColorPreview.Background = new SolidColorBrush(c);
             };
         }
 

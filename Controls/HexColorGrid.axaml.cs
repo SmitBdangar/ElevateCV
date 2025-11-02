@@ -44,12 +44,18 @@ namespace Luminos.Controls
                         CornerRadius = new CornerRadius(6),
                         Background = new SolidColorBrush(c),
                         Margin = new Thickness(3),
+                        BorderBrush = Brushes.Transparent,   // keep layout stable
+                        BorderThickness = new Thickness(2),  // thin outline
                         Cursor = new Cursor(StandardCursorType.Hand)
                     };
 
+
                     cell.PointerPressed += (_, __) => ColorSelected?.Invoke(c);
-                    cell.PointerEntered += (_, __) => cell.BorderBrush = Brushes.White;
-                    cell.PointerExited  += (_, __) => cell.BorderBrush = null;
+                    cell.PointerEntered += (_, __) =>
+                        cell.BorderBrush = Brushes.White;
+
+                    cell.PointerExited += (_, __) =>
+                        cell.BorderBrush = Brushes.Transparent;
 
                     grid.Children.Add(cell);
                 }
