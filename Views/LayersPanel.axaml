@@ -1,0 +1,32 @@
+<UserControl
+    x:Class="Pixellum.Views.LayersPanel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Border Padding="10">
+        <StackPanel Spacing="10">
+            <TextBlock Text="Layers" 
+                       Foreground="White" 
+                       FontSize="16" 
+                       FontWeight="Bold"/>
+
+            <!-- Layers List -->
+            <ScrollViewer MaxHeight="500" VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="LayersStack" Spacing="5"/>
+            </ScrollViewer>
+
+            <!-- Add Layer Button -->
+            <Button x:Name="AddLayerButton"
+                    Content="+"
+                    FontSize="24"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Height="40"
+                    Background="#555"
+                    Foreground="White"
+                    Click="OnAddLayerClicked"/>
+        </StackPanel>
+    </Border>
+
+</UserControl>

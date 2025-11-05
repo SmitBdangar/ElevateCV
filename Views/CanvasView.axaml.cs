@@ -14,7 +14,8 @@ namespace Pixellum.Views
     {
         private Document _document;
         private readonly List<Layer> _layers = new();
-        private Layer _activeLayer => _layers[0];
+        private int _activeLayerIndex = 0;
+        private Layer _activeLayer => _layers[_activeLayerIndex];
 
         private readonly BrushEngine _brushEngine = new();
         private readonly Renderer _renderer = new();
@@ -22,14 +23,12 @@ namespace Pixellum.Views
         private Image? _canvasImage;
         private bool _isDrawing = false;
 
-        // ✅ NEW SIMPLE UNDO/REDO SYSTEM
         private readonly Stack<uint[]> _undoStack = new Stack<uint[]>();
         private readonly Stack<uint[]> _redoStack = new Stack<uint[]>();
         private const int MAX_HISTORY = 30;
 
         public bool ShowBrushPreview { get; set; }
         public float PreviewBrushRadius { get; set; }
-
 
         private uint _activeColor = 0xFFFF0000;
         private float _brushRadius = 15f;
@@ -46,7 +45,7 @@ namespace Pixellum.Views
 
             const int W = 800, H = 600;
             _document = new Document(W, H);
-            _layers.Add(new Layer(W, H, "Base Layer"));
+            _layers.Add(new Layer(W, H, "Layer 1"));
 
             _canvasBitmap = new WriteableBitmap(
                 new PixelSize(W, H),
@@ -67,9 +66,66 @@ namespace Pixellum.Views
             RedrawCanvas();
         }
 
-        /// <summary>
-        /// Converts screen pointer position to bitmap pixel coordinates
-        /// </summary>
+        // ✅ NEW LAYER MANAGEMENT METHODS
+        public void AddLayer(string name)
+        {
+            var newLayer = new Layer(_document.Width, _document.Height, name);
+            _layers.Add(newLayer);
+            _activeLayerIndex = _layers.Count - 1;
+            RedrawCanvas();
+            System.Diagnostics.Debug.WriteLine($"✅ Added new layer: {name}");
+        }
+
+        public void DeleteLayer(int index)
+        {
+            if (_layers.Count <= 1)
+            {
+                System.Diagnostics.Debug.WriteLine("⚠️ Cannot delete the last layer");
+                return;
+            }
+
+            if (index >= 0 && index < _layers.Count)
+            {
+                string deletedName = _layers[index].Name;
+                _layers.RemoveAt(index);
+
+                // Adjust active layer index if needed
+                if (_activeLayerIndex >= _layers.Count)
+                {
+                    _activeLayerIndex = _layers.Count - 1;
+                }
+                else if (_activeLayerIndex > index)
+                {
+                    _activeLayerIndex--;
+                }
+
+                RedrawCanvas();
+                System.Diagnostics.Debug.WriteLine($"✅ Deleted layer: {deletedName}");
+            }
+        }
+
+        public void RenameLayer(int index, string newName)
+        {
+            if (index >= 0 && index < _layers.Count && !string.IsNullOrWhiteSpace(newName))
+            {
+                _layers[index].Name = newName;
+                System.Diagnostics.Debug.WriteLine($"✅ Renamed layer to: {newName}");
+            }
+        }
+
+        public List<Layer> GetLayers() => _layers;
+
+        public int GetActiveLayerIndex() => _activeLayerIndex;
+
+        public void SetActiveLayer(int index)
+        {
+            if (index >= 0 && index < _layers.Count)
+            {
+                _activeLayerIndex = index;
+                System.Diagnostics.Debug.WriteLine($"✅ Active layer changed to: {_layers[index].Name}");
+            }
+        }
+
         private Point? GetBitmapCoordinates(PointerEventArgs e)
         {
             if (_canvasImage?.Bounds == null || _canvasBitmap == null)
@@ -106,10 +162,7 @@ namespace Pixellum.Views
             if (coords == null) return;
 
             _isDrawing = true;
-
-            // ✅ SAVE STATE BEFORE DRAWING (full layer snapshot)
             SaveStateForUndo();
-
             DrawAtPoint(coords.Value.X, coords.Value.Y);
 
             e.Handled = true;
@@ -163,25 +216,16 @@ namespace Pixellum.Views
             }
         }
 
-        // ✅ NEW UNDO/REDO IMPLEMENTATION
-
-        /// <summary>
-        /// Save current layer state to undo stack
-        /// </summary>
         private void SaveStateForUndo()
         {
             try
             {
-                // Clone the current layer pixels
                 uint[] snapshot = new uint[_activeLayer.Width * _activeLayer.Height];
                 Array.Copy(_activeLayer.GetPixels(), snapshot, snapshot.Length);
 
                 _undoStack.Push(snapshot);
-
-                // Clear redo stack (new action invalidates redo history)
                 _redoStack.Clear();
 
-                // Limit history size
                 if (_undoStack.Count > MAX_HISTORY)
                 {
                     var tempList = new List<uint[]>(_undoStack);
@@ -200,9 +244,6 @@ namespace Pixellum.Views
             }
         }
 
-        /// <summary>
-        /// Undo last action
-        /// </summary>
         public void Undo()
         {
             if (_undoStack.Count == 0)
@@ -213,12 +254,10 @@ namespace Pixellum.Views
 
             try
             {
-                // Save current state to redo stack
                 uint[] currentState = new uint[_activeLayer.Width * _activeLayer.Height];
                 Array.Copy(_activeLayer.GetPixels(), currentState, currentState.Length);
                 _redoStack.Push(currentState);
 
-                // Restore previous state
                 uint[] previousState = _undoStack.Pop();
                 Array.Copy(previousState, _activeLayer.GetPixels(), previousState.Length);
 
@@ -232,9 +271,6 @@ namespace Pixellum.Views
             }
         }
 
-        /// <summary>
-        /// Redo last undone action
-        /// </summary>
         public void Redo()
         {
             if (_redoStack.Count == 0)
@@ -245,12 +281,10 @@ namespace Pixellum.Views
 
             try
             {
-                // Save current state to undo stack
                 uint[] currentState = new uint[_activeLayer.Width * _activeLayer.Height];
                 Array.Copy(_activeLayer.GetPixels(), currentState, currentState.Length);
                 _undoStack.Push(currentState);
 
-                // Restore redo state
                 uint[] redoState = _redoStack.Pop();
                 Array.Copy(redoState, _activeLayer.GetPixels(), redoState.Length);
 

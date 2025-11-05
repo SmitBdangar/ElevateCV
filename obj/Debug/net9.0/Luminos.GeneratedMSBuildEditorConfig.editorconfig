@@ -39,5 +39,8 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [C:/Users/Admin/github/Pixellum/Views/CanvasView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[C:/Users/Admin/github/Pixellum/Views/LayersPanel.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [C:/Users/Admin/github/Pixellum/Views/ToolsPanel.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
