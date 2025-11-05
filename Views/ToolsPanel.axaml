@@ -4,27 +4,255 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Pixellum.Controls">
 
-    <Border Padding="10">
-<StackPanel Margin="10" Spacing="10">
+    <Border Padding="10" Background="#2a2a2a">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="15">
 
-    <TextBlock Text="Color" Foreground="White" />
+                <!-- Tool Selection -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Tools" 
+                               Foreground="White" 
+                               FontSize="16" 
+                               FontWeight="Bold"/>
+                    
+                    <UniformGrid Columns="2" Rows="2">
+                        <Button x:Name="BrushToolButton"
+                                Content="🖌️"
+                                FontSize="24"
+                                Height="50"
+                                Margin="2"
+                                Background="#4CAF50"
+                                Foreground="White"
+                                CornerRadius="5"
+                                Click="OnBrushToolClicked"/>
+                        
+                        <Button x:Name="EraserToolButton"
+                                Content="🧹"
+                                FontSize="24"
+                                Height="50"
+                                Margin="2"
+                                Background="#555"
+                                Foreground="White"
+                                CornerRadius="5"
+                                Click="OnEraserToolClicked"/>
+                        
+                        <Button x:Name="EyedropperToolButton"
+                                Content="💧"
+                                FontSize="24"
+                                Height="50"
+                                Margin="2"
+                                Background="#555"
+                                Foreground="White"
+                                CornerRadius="5"
+                                Click="OnEyedropperToolClicked"/>
+                        
+                        <Button x:Name="FillToolButton"
+                                Content="🪣"
+                                FontSize="24"
+                                Height="50"
+                                Margin="2"
+                                Background="#555"
+                                Foreground="White"
+                                CornerRadius="5"
+                                Click="OnFillToolClicked"/>
+                    </UniformGrid>
+                </StackPanel>
 
-    <!-- ADD THIS -->
-    <controls:ColorWheel x:Name="ColorPicker" Width="140" Height="140"/>
+                <Separator Background="#555"/>
 
-    <Border x:Name="ColorPreview"
-            Width="40" Height="40"
-            CornerRadius="20"
-            Background="White"
-            HorizontalAlignment="Left"/>
+                <!-- Color Picker Section -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Color" 
+                               Foreground="White" 
+                               FontSize="14" 
+                               FontWeight="SemiBold"/>
+                    
+                    <!-- Color Wheel -->
+                    <controls:ColorWheel x:Name="ColorPicker" 
+                                        Width="160" 
+                                        Height="160"
+                                        HorizontalAlignment="Center"/>
+                    
+                    <!-- Primary/Secondary Color Swatches -->
+                    <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                        <Border Grid.Column="0"
+                                x:Name="PrimaryColorPreview"
+                                Width="60" 
+                                Height="60"
+                                CornerRadius="8"
+                                Background="Black"
+                                BorderBrush="White"
+                                BorderThickness="3"
+                                HorizontalAlignment="Right"
+                                Margin="0,0,5,0"
+                                Cursor="Hand">
+                            <ToolTip.Tip>Primary Color (Click to swap)</ToolTip.Tip>
+                        </Border>
+                        
+                        <Border Grid.Column="1"
+                                x:Name="SecondaryColorPreview"
+                                Width="40" 
+                                Height="40"
+                                CornerRadius="6"
+                                Background="White"
+                                BorderBrush="#AAA"
+                                BorderThickness="2"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Bottom"
+                                Margin="5,0,0,0"
+                                Cursor="Hand">
+                            <ToolTip.Tip>Secondary Color (Click to swap)</ToolTip.Tip>
+                        </Border>
+                    </Grid>
 
-    <TextBlock Text="Brush Size" Foreground="White" Margin="0,20,0,0"/>
-    <Slider x:Name="BrushSizeSlider" Minimum="1" Maximum="100"/>
+                    <!-- Hex Color Input -->
+                    <StackPanel Spacing="5" Margin="0,10,0,0">
+                        <TextBlock Text="Hex Color" 
+                                   Foreground="#AAA" 
+                                   FontSize="11"/>
+                        <TextBox x:Name="HexColorInput"
+                                 Text="#000000"
+                                 Watermark="#RRGGBB"
+                                 MaxLength="7"
+                                 FontFamily="Consolas"
+                                 FontSize="12"
+                                 TextChanged="OnHexColorChanged"/>
+                    </StackPanel>
 
-    <TextBlock Text="Opacity" Foreground="White" Margin="0,20,0,0"/>
-    <Slider x:Name="OpacitySlider" Minimum="0" Maximum="1"/>
+                    <!-- Quick Color Palette -->
+                    <StackPanel Spacing="5" Margin="0,10,0,0">
+                        <TextBlock Text="Quick Colors" 
+                                   Foreground="#AAA" 
+                                   FontSize="11"/>
+                        <UniformGrid x:Name="QuickColorGrid" 
+                                     Columns="6" 
+                                     Rows="2"/>
+                    </StackPanel>
+                </StackPanel>
 
-</StackPanel>
+                <Separator Background="#555"/>
+
+                <!-- Brush Settings -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Brush Settings" 
+                               Foreground="White" 
+                               FontSize="14" 
+                               FontWeight="SemiBold"/>
+                    
+                    <!-- Brush Size -->
+                    <StackPanel Spacing="5">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="Size" 
+                                       Foreground="#AAA" 
+                                       FontSize="11"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       x:Name="BrushSizeValue"
+                                       Text="15px" 
+                                       Foreground="White" 
+                                       FontSize="11"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                        <Slider x:Name="BrushSizeSlider" 
+                                Minimum="1" 
+                                Maximum="100"
+                                Value="15"/>
+                    </StackPanel>
+
+                    <!-- Brush Opacity -->
+                    <StackPanel Spacing="5" Margin="0,10,0,0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="Opacity" 
+                                       Foreground="#AAA" 
+                                       FontSize="11"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       x:Name="OpacityValue"
+                                       Text="100%" 
+                                       Foreground="White" 
+                                       FontSize="11"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                        <Slider x:Name="OpacitySlider" 
+                                Minimum="0" 
+                                Maximum="1"
+                                Value="1"/>
+                    </StackPanel>
+
+                    <!-- Brush Hardness -->
+                    <StackPanel Spacing="5" Margin="0,10,0,0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="Hardness" 
+                                       Foreground="#AAA" 
+                                       FontSize="11"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       x:Name="HardnessValue"
+                                       Text="100%" 
+                                       Foreground="White" 
+                                       FontSize="11"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                        <Slider x:Name="HardnessSlider" 
+                                Minimum="0" 
+                                Maximum="1"
+                                Value="1"/>
+                    </StackPanel>
+
+                    <!-- Brush Flow -->
+                    <StackPanel Spacing="5" Margin="0,10,0,0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="Flow" 
+                                       Foreground="#AAA" 
+                                       FontSize="11"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       x:Name="FlowValue"
+                                       Text="100%" 
+                                       Foreground="White" 
+                                       FontSize="11"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                        <Slider x:Name="FlowSlider" 
+                                Minimum="0" 
+                                Maximum="1"
+                                Value="1"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Separator Background="#555"/>
+
+                <!-- Canvas Actions -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Canvas" 
+                               Foreground="White" 
+                               FontSize="14" 
+                               FontWeight="SemiBold"/>
+                    
+                    <Button Content="Clear Canvas"
+                            HorizontalAlignment="Stretch"
+                            Height="35"
+                            Background="#d32f2f"
+                            Foreground="White"
+                            CornerRadius="5"
+                            Click="OnClearCanvasClicked"/>
+                    
+                    <Button Content="Fill Canvas"
+                            HorizontalAlignment="Stretch"
+                            Height="35"
+                            Background="#555"
+                            Foreground="White"
+                            CornerRadius="5"
+                            Margin="0,5,0,0"
+                            Click="OnFillCanvasClicked"/>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
     </Border>
 
 </UserControl>
