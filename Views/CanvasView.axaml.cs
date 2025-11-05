@@ -4,11 +4,11 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Input;
 using Avalonia;
-using Luminos.Core;
-using Luminos.Rendering;
+using Pixellum.Core;
+using Pixellum.Rendering;
 using Avalonia.Platform;
 
-namespace Luminos.Views
+namespace Pixellum.Views
 {
     public partial class CanvasView : UserControl
     {

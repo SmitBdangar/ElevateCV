@@ -1,9 +1,9 @@
-using Luminos.Core;
+using Pixellum.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Luminos.Rendering
+namespace Pixellum.Rendering
 {
     /// <summary>
     /// Handles combining all layers in a Document into the final composite pixel buffer.

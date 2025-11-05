@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Luminos.Core.Core
+namespace Pixellum.Core.Core
 {
     /// <summary>
     /// Manages the command stack for undo/redo functionality using commands/mementos.

@@ -1,6 +1,6 @@
 <!-- <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="Luminos.Controls.ColorWheel"
+             x:Class="Pixellum.Controls.ColorWheel"
              MinHeight="200" MinWidth="200">
 
     <Border Background="Transparent"
@@ -15,7 +15,7 @@
 </UserControl> -->
 
 <UserControl
-    x:Class="Luminos.Controls.ColorWheel"
+    x:Class="Pixellum.Controls.ColorWheel"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 

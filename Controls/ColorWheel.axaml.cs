@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 
-namespace Luminos.Controls
+namespace Pixellum.Controls
 {
     public partial class ColorWheel : UserControl
     {

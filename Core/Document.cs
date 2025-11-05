@@ -1,7 +1,7 @@
 using System;
 
 
-namespace Luminos.Core
+namespace Pixellum.Core
 {
 
     public class Document

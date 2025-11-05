@@ -2,9 +2,9 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.VisualTree;
-using Luminos.Controls;
+using Pixellum.Controls;
 
-namespace Luminos.Views
+namespace Pixellum.Views
 {
     public partial class ToolsPanel : UserControl
     {

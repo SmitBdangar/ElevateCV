@@ -1,7 +1,7 @@
 using System;
-using Luminos.Core; // ✅ correct namespace for Layer, Document
+using Pixellum.Core; // ✅ correct namespace for Layer, Document
 
-namespace Luminos.Rendering
+namespace Pixellum.Rendering
 {
     public class BrushEngine
     {

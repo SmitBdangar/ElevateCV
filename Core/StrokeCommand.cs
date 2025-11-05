@@ -1,7 +1,7 @@
 using System;
-using Luminos.Core.Core;
+using Pixellum.Core.Core;
 
-namespace Luminos.Core
+namespace Pixellum.Core
 {
     /// <summary>
     /// Represents a single painting stroke that can be undone and redone

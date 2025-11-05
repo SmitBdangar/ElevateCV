@@ -3,10 +3,10 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using Avalonia.Platform.Storage;
-using Luminos.Views;
-using Luminos.Core;
+using Pixellum.Views;
+using Pixellum.Core;
 
-namespace Luminos
+namespace Pixellum
 {
     public partial class MainWindow : Window
     {
@@ -57,7 +57,7 @@ namespace Luminos
             var file = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
                 Title = "Export PNG",
-                SuggestedFileName = "Luminos_Image",
+                SuggestedFileName = "Pixellum_Image",
                 FileTypeChoices = new[] { FilePickerFileTypes.ImagePng }
             });
 

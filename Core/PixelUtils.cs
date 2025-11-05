@@ -1,6 +1,6 @@
 using System;
 
-namespace Luminos.Core
+namespace Pixellum.Core
 {
     /// <summary>
     /// Utility methods for manipulating 1D pixel buffers.

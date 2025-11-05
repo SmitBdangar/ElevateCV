@@ -1,8 +1,8 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:views="clr-namespace:Luminos.Views"
-        x:Class="Luminos.MainWindow"
-        Title="Luminos - Digital Painting"
+        xmlns:views="clr-namespace:Pixellum.Views"
+        x:Class="Pixellum.MainWindow"
+        Title="Pixellum - Digital Painting"
         Width="1200" Height="800"
         WindowStartupLocation="CenterScreen">
 

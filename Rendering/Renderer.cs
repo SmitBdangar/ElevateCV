@@ -1,11 +1,11 @@
 using System;
-using Luminos.Core; 
+using Pixellum.Core; 
 using Avalonia.Media.Imaging; // Required for WriteableBitmap
 using Avalonia; 
 using Avalonia.Platform;
 using System.Runtime.CompilerServices;
 
-namespace Luminos.Rendering
+namespace Pixellum.Rendering
 {
     /// <summary>
     /// Handles mapping the Document's raw pixel data to an Avalonia WriteableBitmap.

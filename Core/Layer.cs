@@ -1,6 +1,6 @@
 using System;
 
-namespace Luminos.Core
+namespace Pixellum.Core
 {
     public enum BlendMode
     {

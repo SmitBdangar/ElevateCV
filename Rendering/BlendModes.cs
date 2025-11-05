@@ -1,7 +1,7 @@
 using System;
-using Luminos.Rendering;
+using Pixellum.Rendering;
 
-namespace Luminos.Rendering
+namespace Pixellum.Rendering
 {
     /// <summary>
     /// Placeholder class for advanced blending logic to be implemented in Phase 2.

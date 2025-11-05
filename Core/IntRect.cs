@@ -1,4 +1,4 @@
-namespace Luminos.Core
+namespace Pixellum.Core
 {
     /// <summary>
     /// Represents an integer-based rectangular region (used for dirty tracking).

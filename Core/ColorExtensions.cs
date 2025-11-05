@@ -1,6 +1,6 @@
 using Avalonia.Media;
 
-namespace Luminos.Core
+namespace Pixellum.Core
 {
     public static class ColorExtensions
     {

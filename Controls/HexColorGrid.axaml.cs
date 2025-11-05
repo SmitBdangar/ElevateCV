@@ -5,7 +5,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using System;
 
-namespace Luminos.Controls
+namespace Pixellum.Controls
 {
     public partial class HexColorGrid : UserControl
     {

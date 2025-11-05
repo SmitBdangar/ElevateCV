@@ -5,7 +5,7 @@ using System;
 
 using System.Threading.Tasks;
 
-namespace Luminos.Core
+namespace Pixellum.Core
 {
     public static class FileHandler
     {

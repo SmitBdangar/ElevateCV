@@ -2,7 +2,7 @@ using System;
 using Avalonia;
 using Avalonia.Fonts.Inter;
 
-namespace Luminos;
+namespace Pixellum;
 
 class Program
 {

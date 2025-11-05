@@ -7,7 +7,7 @@ using Avalonia.Platform;   // ← this fixes PixelFormat + AlphaFormat
 using System;
 
 
-namespace Luminos.Controls
+namespace Pixellum.Controls
 {
     public partial class ColorSVPad : UserControl
     {
