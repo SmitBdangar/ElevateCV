@@ -3,29 +3,108 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Border Padding="10">
+    <Border Padding="10" Background="#2a2a2a">
         <StackPanel Spacing="10">
+            <!-- Header -->
             <TextBlock Text="Layers" 
                        Foreground="White" 
                        FontSize="16" 
-                       FontWeight="Bold"/>
+                       FontWeight="Bold"
+                       Margin="0,0,0,5"/>
+
+            <!-- Layer Controls -->
+            <Grid ColumnDefinitions="*,*,*" Margin="0,0,0,10">
+                <!-- Add Layer Button -->
+                <Button Grid.Column="0"
+                        x:Name="AddLayerButton"
+                        Content="+"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Height="35"
+                        Background="#4CAF50"
+                        Foreground="White"
+                        CornerRadius="5"
+                        Margin="0,0,5,0"
+                        Click="OnAddLayerClicked"
+                        ToolTip.Tip="Add new layer"/>
+
+                <!-- Duplicate Layer Button -->
+                <Button Grid.Column="1"
+                        x:Name="DuplicateLayerButton"
+                        Content="⎘"
+                        FontSize="18"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Height="35"
+                        Background="#555"
+                        Foreground="White"
+                        CornerRadius="5"
+                        Margin="0,0,5,0"
+                        Click="OnDuplicateLayerClicked"
+                        ToolTip.Tip="Duplicate active layer"/>
+
+                <!-- Merge Down Button -->
+                <Button Grid.Column="2"
+                        x:Name="MergeDownButton"
+                        Content="⬇"
+                        FontSize="18"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Height="35"
+                        Background="#555"
+                        Foreground="White"
+                        CornerRadius="5"
+                        Click="OnMergeDownClicked"
+                        ToolTip.Tip="Merge with layer below"/>
+            </Grid>
+
+            <!-- Active Layer Info -->
+            <Border Background="#333" 
+                    Padding="8" 
+                    CornerRadius="5"
+                    Margin="0,0,0,5">
+                <StackPanel Spacing="5">
+                    <TextBlock x:Name="ActiveLayerName" 
+                               Text="Active: Layer 1" 
+                               Foreground="White" 
+                               FontSize="12"
+                               FontWeight="SemiBold"/>
+                    
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Grid.Column="0" 
+                                   Text="Opacity:" 
+                                   Foreground="#AAA" 
+                                   FontSize="11"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+                        
+                        <Slider Grid.Column="1"
+                                x:Name="LayerOpacitySlider"
+                                Minimum="0"
+                                Maximum="100"
+                                Value="100"
+                                VerticalAlignment="Center"
+                                ValueChanged="OnLayerOpacityChanged"/>
+                        
+                        <TextBlock Grid.Column="2" 
+                                   x:Name="OpacityValueText"
+                                   Text="100%" 
+                                   Foreground="White" 
+                                   FontSize="11"
+                                   VerticalAlignment="Center"
+                                   Margin="8,0,0,0"
+                                   MinWidth="40"
+                                   TextAlignment="Right"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
 
             <!-- Layers List -->
-            <ScrollViewer MaxHeight="500" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer MaxHeight="450" VerticalScrollBarVisibility="Auto">
                 <StackPanel x:Name="LayersStack" Spacing="5"/>
             </ScrollViewer>
-
-            <!-- Add Layer Button -->
-            <Button x:Name="AddLayerButton"
-                    Content="+"
-                    FontSize="24"
-                    FontWeight="Bold"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Center"
-                    Height="40"
-                    Background="#555"
-                    Foreground="White"
-                    Click="OnAddLayerClicked"/>
         </StackPanel>
     </Border>
 
